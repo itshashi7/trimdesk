@@ -23,3 +23,12 @@ spring:
     locations: classpath:db/migration
   jackson:
     time-zone: UTC
+
+groomdesk:
+  jwt:
+    # Demo default only. Set JWT_SECRET (32+ bytes) on any public deployment.
+    secret: ${JWT_SECRET:groomdesk-local-dev-secret-change-me-0123456789}
+    ttl: 12h
+  cors:
+    # Vite dev server; add the deployed frontend origin via CORS_ORIGINS (comma-separated).
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}

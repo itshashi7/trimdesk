@@ -1,10 +1,15 @@
 package com.groomdesk.billing;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface BillItemRepository extends JpaRepository<BillItem, Long> {
 
     List<BillItem> findByBillId(Long billId);
+
+    @EntityGraph(attributePaths = {"service", "barber"})
+    List<BillItem> findByBillIdIn(Collection<Long> billIds);
 }
