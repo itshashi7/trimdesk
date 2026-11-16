@@ -6,7 +6,7 @@ spring:
   application:
     name: groomdesk
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/groomdesk}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/groomdesk?reWriteBatchedInserts=true}
     username: ${DB_USER:groomdesk}
     password: ${DB_PASSWORD:groomdesk}
   jpa:

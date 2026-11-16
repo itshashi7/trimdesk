@@ -1,0 +1,18 @@
+[
+  { "code": "1", "name": "Haircut",               "category": "HAIR",   "price": 250.00,  "durationMin": 30 },
+  { "code": "2", "name": "Beard Trim",            "category": "BEARD",  "price": 150.00,  "durationMin": 15 },
+  { "code": "3", "name": "Haircut + Beard",       "category": "COMBO",  "price": 350.00,  "durationMin": 45 },
+  { "code": "4", "name": "Clean Shave",           "category": "BEARD",  "price": 120.00,  "durationMin": 15 },
+  { "code": "5", "name": "Kids Haircut",          "category": "HAIR",   "price": 180.00,  "durationMin": 20 },
+  { "code": "6", "name": "Hair Wash & Styling",   "category": "HAIR",   "price": 150.00,  "durationMin": 15 },
+  { "code": "7", "name": "Head Massage",          "category": "OTHER",  "price": 200.00,  "durationMin": 20 },
+  { "code": "8", "name": "De-tan Facial",         "category": "FACIAL", "price": 600.00,  "durationMin": 40 },
+  { "code": "9", "name": "Hair Colour (Global)",  "category": "HAIR",   "price": 800.00,  "durationMin": 60 },
+  { "code": null, "name": "Skin Fade",            "category": "HAIR",   "price": 350.00,  "durationMin": 40 },
+  { "code": null, "name": "Beard Colour",         "category": "BEARD",  "price": 300.00,  "durationMin": 20 },
+  { "code": null, "name": "Moustache Styling",    "category": "BEARD",  "price": 80.00,   "durationMin": 10 },
+  { "code": null, "name": "Classic Facial",       "category": "FACIAL", "price": 500.00,  "durationMin": 40 },
+  { "code": null, "name": "Charcoal Face Mask",   "category": "FACIAL", "price": 400.00,  "durationMin": 25 },
+  { "code": null, "name": "Hair Spa",             "category": "HAIR",   "price": 700.00,  "durationMin": 45 },
+  { "code": null, "name": "Groom Package",        "category": "COMBO",  "price": 2500.00, "durationMin": 150 }
+]
