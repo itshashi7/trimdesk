@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: groomdesk-postgres
+    environment:
+      POSTGRES_DB: groomdesk
+      POSTGRES_USER: groomdesk
+      POSTGRES_PASSWORD: groomdesk
+      TZ: UTC
+    ports:
+      - "5432:5432"
+    volumes:
+      - groomdesk-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U groomdesk -d groomdesk"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  groomdesk-pgdata:
