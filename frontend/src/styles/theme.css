@@ -1,0 +1,39 @@
+/*
+ * GroomDesk theme tokens. Components use these through Tailwind (tailwind.config.js);
+ * no hex values belong anywhere else.
+ *
+ * Accent is reserved for: primary buttons, the active nav item, chart lines and the bill total.
+ */
+:root {
+  --bg: #f5f5f4;
+  --surface: #ffffff;
+  --surface-muted: #f7f7f6;
+  --border: #e6e6e3;
+  --border-strong: #d3d3cf;
+  --text: #1c1c1e;
+  --text-muted: #67676c;
+
+  /* Preset "Neutral": graphite accent. */
+  --accent: #1c1c1e;
+  --accent-contrast: #ffffff;
+
+  /* Preset "McKingstown". MCK_ACCENT: sample from the client's signage before the pitch;
+     it must keep 4.5:1 contrast with --accent-contrast. Placeholder = graphite. */
+  --mck-accent: #1c1c1e;
+  --mck-accent-contrast: #ffffff;
+
+  --danger: #b42318;
+  --danger-surface: #fef3f2;
+  --success: #067647;
+  --success-surface: #ecfdf3;
+
+  --shadow-pop: 0 8px 24px rgb(0 0 0 / 0.16), 0 2px 6px rgb(0 0 0 / 0.08);
+
+  --focus: var(--accent);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+}
+
+:root[data-accent="mck"] {
+  --accent: var(--mck-accent);
+  --accent-contrast: var(--mck-accent-contrast);
+}

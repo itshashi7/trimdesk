@@ -88,8 +88,10 @@ Indexes: `bill(outlet_id, created_at)`, `bill(customer_id)`, `bill_item(barber_i
 ### Business rules
 - `subtotal = Σ bill_item.price`
 - `discount` is a flat amount or % entered by cashier; cap at subtotal.
-- `taxable_amount = subtotal − discount`; `tax_amount = taxable_amount × outlet.tax_rate / 100`;
-  `total = taxable_amount + tax_amount`.
+- **Menu prices include tax** (tax-inclusive pricing; tax is never added on top).
+  `total = subtotal − discount` (what the customer pays);
+  `taxable_amount = total × 100 / (100 + outlet.tax_rate)` (HALF_UP to 2 decimals);
+  `tax_amount = total − taxable_amount`.
 - Tax rate is **configurable per outlet**. Seed a placeholder; real GST rate to be confirmed with
   the client's accountant before any real use.
 - `commission_amount = item.price × barber.commission_percent / 100` (on pre-discount price, demo rule).

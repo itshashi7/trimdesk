@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,31 +19,41 @@ class BillCalculatorTest {
     }
 
     private static List<BigDecimal> prices(String... values) {
-        return java.util.Arrays.stream(values).map(BigDecimal::new).toList();
+        return Arrays.stream(values).map(BigDecimal::new).toList();
     }
 
+    /** Menu prices include tax: the customer pays subtotal − discount; tax is backed out of that. */
     @Nested
     class BillTotal {
 
         @Test
-        void subtotalIsSumOfItemPricesAndTaxIsOnTaxableAmount() {
+        void totalIsSubtotalAndTaxIsInsideIt() {
             BillCalculator.Amounts a = BillCalculator.compute(prices("250.00", "150.00"), null, GST_18);
 
+            // 400 x 100 / 118 = 338.983 -> 338.98; tax = 400 - 338.98
             assertThat(a.subtotal()).isEqualByComparingTo("400.00");
             assertThat(a.discount()).isEqualByComparingTo("0.00");
-            assertThat(a.taxableAmount()).isEqualByComparingTo("400.00");
-            assertThat(a.taxAmount()).isEqualByComparingTo("72.00");
-            assertThat(a.total()).isEqualByComparingTo("472.00");
+            assertThat(a.total()).isEqualByComparingTo("400.00");
+            assertThat(a.taxableAmount()).isEqualByComparingTo("338.98");
+            assertThat(a.taxAmount()).isEqualByComparingTo("61.02");
         }
 
         @Test
-        void flatDiscountReducesTaxableAmountBeforeTax() {
+        void taxableAndTaxAlwaysAddUpToTotal() {
+            BillCalculator.Amounts a = BillCalculator.compute(prices("350.00", "80.00", "600.00"), bd("37.50"), GST_18);
+
+            assertThat(a.taxableAmount().add(a.taxAmount())).isEqualByComparingTo(a.total());
+        }
+
+        @Test
+        void flatDiscountReducesWhatTheCustomerPays() {
             BillCalculator.Amounts a = BillCalculator.compute(prices("250.00", "150.00"), bd("100"), GST_18);
 
+            // 300 x 100 / 118 = 254.237 -> 254.24
             assertThat(a.discount()).isEqualByComparingTo("100.00");
-            assertThat(a.taxableAmount()).isEqualByComparingTo("300.00");
-            assertThat(a.taxAmount()).isEqualByComparingTo("54.00");
-            assertThat(a.total()).isEqualByComparingTo("354.00");
+            assertThat(a.total()).isEqualByComparingTo("300.00");
+            assertThat(a.taxableAmount()).isEqualByComparingTo("254.24");
+            assertThat(a.taxAmount()).isEqualByComparingTo("45.76");
         }
 
         @Test
@@ -52,11 +63,12 @@ class BillCalculatorTest {
 
             BillCalculator.Amounts a = BillCalculator.compute(items, discount, GST_18);
 
+            // 550 - 82.50 = 467.50; 467.50 x 100 / 118 = 396.186 -> 396.19
             assertThat(a.subtotal()).isEqualByComparingTo("550.00");
             assertThat(a.discount()).isEqualByComparingTo("82.50");
-            assertThat(a.taxableAmount()).isEqualByComparingTo("467.50");
-            assertThat(a.taxAmount()).isEqualByComparingTo("84.15");
-            assertThat(a.total()).isEqualByComparingTo("551.65");
+            assertThat(a.total()).isEqualByComparingTo("467.50");
+            assertThat(a.taxableAmount()).isEqualByComparingTo("396.19");
+            assertThat(a.taxAmount()).isEqualByComparingTo("71.31");
         }
 
         @Test
@@ -64,9 +76,9 @@ class BillCalculatorTest {
             BillCalculator.Amounts a = BillCalculator.compute(prices("150.00"), bd("200.00"), GST_18);
 
             assertThat(a.discount()).isEqualByComparingTo("150.00");
+            assertThat(a.total()).isEqualByComparingTo("0.00");
             assertThat(a.taxableAmount()).isEqualByComparingTo("0.00");
             assertThat(a.taxAmount()).isEqualByComparingTo("0.00");
-            assertThat(a.total()).isEqualByComparingTo("0.00");
         }
 
         @Test
@@ -76,11 +88,12 @@ class BillCalculatorTest {
         }
 
         @Test
-        void taxRoundsHalfUpToTwoDecimals() {
-            // 0.25 x 18% = 0.045 -> 0.05 (HALF_EVEN would give 0.04)
-            assertThat(BillCalculator.compute(prices("0.25"), null, GST_18).taxAmount()).isEqualByComparingTo("0.05");
-            // 2.50 x 5% = 0.125 -> 0.13
-            assertThat(BillCalculator.compute(prices("2.50"), null, bd("5")).taxAmount()).isEqualByComparingTo("0.13");
+        void taxableRoundsHalfUpToTwoDecimals() {
+            // 0.04 x 100 / 160 = 0.025 -> 0.03 (HALF_EVEN would give 0.02)
+            BillCalculator.Amounts a = BillCalculator.compute(prices("0.04"), null, bd("60"));
+
+            assertThat(a.taxableAmount()).isEqualByComparingTo("0.03");
+            assertThat(a.taxAmount()).isEqualByComparingTo("0.01");
         }
 
         @Test
@@ -89,8 +102,11 @@ class BillCalculatorTest {
             BillCalculator.Amounts fivePercent = BillCalculator.compute(prices("250.00"), null, bd("5.00"));
 
             assertThat(zeroTax.total()).isEqualByComparingTo("250.00");
-            assertThat(fivePercent.taxAmount()).isEqualByComparingTo("12.50");
-            assertThat(fivePercent.total()).isEqualByComparingTo("262.50");
+            assertThat(zeroTax.taxAmount()).isEqualByComparingTo("0.00");
+            // 250 x 100 / 105 = 238.095 -> 238.10
+            assertThat(fivePercent.total()).isEqualByComparingTo("250.00");
+            assertThat(fivePercent.taxableAmount()).isEqualByComparingTo("238.10");
+            assertThat(fivePercent.taxAmount()).isEqualByComparingTo("11.90");
         }
 
         @Test
@@ -126,7 +142,7 @@ class BillCalculatorTest {
             BigDecimal price = bd("350.00");
             BillCalculator.Amounts discounted = BillCalculator.compute(List.of(price), bd("100"), GST_18);
 
-            assertThat(discounted.taxableAmount()).isEqualByComparingTo("250.00");
+            assertThat(discounted.total()).isEqualByComparingTo("250.00");
             assertThat(BillCalculator.commission(price, bd("40"))).isEqualByComparingTo("140.00");
         }
     }

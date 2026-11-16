@@ -4,9 +4,12 @@ import com.groomdesk.auth.CurrentUser;
 import com.groomdesk.customer.CustomerDtos.CreateCustomerRequest;
 import com.groomdesk.customer.CustomerDtos.CustomerDto;
 import com.groomdesk.customer.CustomerDtos.CustomerLookupDto;
+import com.groomdesk.customer.CustomerDtos.UpdateCustomerRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,5 +37,10 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.CREATED)
     public CustomerDto create(CurrentUser user, @Valid @RequestBody CreateCustomerRequest request) {
         return customerService.create(user, request);
+    }
+
+    @PatchMapping("/{id}")
+    public CustomerDto update(CurrentUser user, @PathVariable long id, @Valid @RequestBody UpdateCustomerRequest request) {
+        return customerService.update(user, id, request);
     }
 }

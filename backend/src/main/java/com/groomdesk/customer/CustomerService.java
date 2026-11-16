@@ -12,6 +12,7 @@ import com.groomdesk.customer.CustomerDtos.CreateCustomerRequest;
 import com.groomdesk.customer.CustomerDtos.CustomerDto;
 import com.groomdesk.customer.CustomerDtos.CustomerLookupDto;
 import com.groomdesk.customer.CustomerDtos.OutletRef;
+import com.groomdesk.customer.CustomerDtos.UpdateCustomerRequest;
 import com.groomdesk.customer.CustomerDtos.VisitDto;
 import com.groomdesk.outlet.Outlet;
 import com.groomdesk.outlet.OutletRepository;
@@ -86,6 +87,36 @@ public class CustomerService {
         Customer customer = new Customer(phone, request.name().trim(), outlet);
         if (request.notes() != null && !request.notes().isBlank()) {
             customer.setNotes(request.notes().trim());
+        }
+        customers.saveAndFlush(customer);
+        return toDto(customer);
+    }
+
+    /**
+     * Corrects name, phone or notes (e.g. a typo at the counter). Allowed for billing roles and HQ.
+     * A phone already used by another customer is rejected so two records never share one number.
+     */
+    @Transactional
+    public CustomerDto update(CurrentUser user, long customerId, UpdateCustomerRequest request) {
+        access.requireAnyRole(user, Role.CASHIER, Role.OUTLET_MANAGER, Role.HQ_ADMIN);
+        Customer customer = customers.findById(customerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+
+        if (request.phone() != null) {
+            String phone = request.phone().trim();
+            if (!phone.equals(customer.getPhone())) {
+                customers.findByPhone(phone).ifPresent(other -> {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT,
+                            "Phone " + phone + " already belongs to another customer");
+                });
+                customer.setPhone(phone);
+            }
+        }
+        if (request.name() != null) {
+            customer.setName(request.name().trim());
+        }
+        if (request.notes() != null) {
+            customer.setNotes(request.notes().isBlank() ? null : request.notes().trim());
         }
         customers.saveAndFlush(customer);
         return toDto(customer);

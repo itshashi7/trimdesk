@@ -6,3 +6,5 @@ backend/target/
 node_modules/
 frontend/dist/
 .env
+.impeccable/review/
+*.tsbuildinfo

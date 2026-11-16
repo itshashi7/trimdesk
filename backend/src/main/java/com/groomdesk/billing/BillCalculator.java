@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import java.util.List;
 
 /**
- * Bill money rules from CLAUDE.md §3. Pure functions, BigDecimal only, HALF_UP to 2 decimals.
+ * Bill money rules from CLAUDE.md §3 (tax-inclusive prices). Pure functions, BigDecimal only, HALF_UP to 2 decimals.
  * Shared by the seed runner and bill creation so both produce identical numbers.
  */
 public final class BillCalculator {
@@ -25,8 +25,9 @@ public final class BillCalculator {
     }
 
     /**
-     * Applies a flat discount (capped at subtotal) and the outlet tax rate.
-     * taxable = subtotal − discount; tax = taxable × rate / 100; total = taxable + tax.
+     * Menu prices include tax. Applies a flat discount (capped at subtotal), then backs the tax out:
+     * total = subtotal − discount (what the customer pays);
+     * taxable = total × 100 / (100 + rate), rounded HALF_UP; tax = total − taxable.
      */
     public static Amounts compute(List<BigDecimal> itemPrices, BigDecimal discount, BigDecimal taxRatePercent) {
         BigDecimal subtotal = subtotal(itemPrices);
@@ -37,9 +38,10 @@ public final class BillCalculator {
         if (appliedDiscount.compareTo(subtotal) > 0) {
             appliedDiscount = subtotal;
         }
-        BigDecimal taxable = subtotal.subtract(appliedDiscount);
-        BigDecimal tax = percentOf(taxable, taxRatePercent);
-        return new Amounts(subtotal, appliedDiscount, taxable, tax, taxable.add(tax));
+        BigDecimal total = subtotal.subtract(appliedDiscount);
+        BigDecimal taxable = total.multiply(HUNDRED).divide(HUNDRED.add(taxRatePercent), 2, RoundingMode.HALF_UP);
+        BigDecimal tax = total.subtract(taxable);
+        return new Amounts(subtotal, appliedDiscount, taxable, tax, total);
     }
 
     /** Converts a percentage discount into a flat amount on the given subtotal. */

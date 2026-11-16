@@ -22,6 +22,13 @@ public final class CustomerDtos {
             @Size(max = 500) String notes) {
     }
 
+    /** Fix a customer's details. Omitted (null) fields stay unchanged; empty notes clears them. */
+    public record UpdateCustomerRequest(
+            @Pattern(regexp = PHONE_REGEX, message = "must be 10 digits starting with 6-9") String phone,
+            @Pattern(regexp = ".*\\S.*", message = "must not be blank") @Size(max = 120) String name,
+            @Size(max = 500) String notes) {
+    }
+
     public record BarberRef(long id, String name, long outletId, String outletCode) {
     }
 
