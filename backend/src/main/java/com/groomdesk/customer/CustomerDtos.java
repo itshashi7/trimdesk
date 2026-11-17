@@ -44,6 +44,17 @@ public final class CustomerDtos {
                            List<String> services, List<String> barbers) {
     }
 
+    /**
+     * Full profile. For a franchise owner, visits and totals cover only their franchise's outlets;
+     * hiddenVisits says how many visits elsewhere were left out.
+     */
+    public record CustomerProfileDto(CustomerDto customer, long totalVisits, BigDecimal totalSpend, int outletsVisited,
+                                     Instant lastVisit, long hiddenVisits, List<VisitDto> visits) {
+    }
+
+    public record CustomerSearchResult(long id, String name, String phone, long visits, Instant lastVisit) {
+    }
+
     /** Billing-screen customer card: profile, totals and the 5 most recent visits across all outlets. */
     public record CustomerLookupDto(CustomerDto customer, long totalVisits, BigDecimal totalSpend,
                                     List<VisitDto> lastVisits) {

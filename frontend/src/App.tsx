@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
-import { canBill, homePath, useAuth } from './lib/auth';
+import { canBill, canViewReports, homePath, useAuth } from './lib/auth';
 import { BillingPage } from './pages/BillingPage';
+import { CustomerProfilePage } from './pages/CustomerProfilePage';
+import { CustomersPage } from './pages/CustomersPage';
 import { LoginPage } from './pages/LoginPage';
-import { OverviewPage } from './pages/OverviewPage';
+import { OutletReportPage } from './pages/OutletReportPage';
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -14,6 +16,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
 export function App() {
   const { user } = useAuth();
   const home = user ? homePath(user.role) : '/login';
+  const reports = user !== null && canViewReports(user.role);
 
   return (
     <Routes>
@@ -29,10 +32,9 @@ export function App() {
           path="/billing"
           element={user && canBill(user.role) ? <BillingPage /> : <Navigate to={home} replace />}
         />
-        <Route
-          path="/overview"
-          element={user && user.role !== 'CASHIER' ? <OverviewPage /> : <Navigate to={home} replace />}
-        />
+        <Route path="/reports/outlet" element={reports ? <OutletReportPage /> : <Navigate to={home} replace />} />
+        <Route path="/customers" element={reports ? <CustomersPage /> : <Navigate to={home} replace />} />
+        <Route path="/customers/:id" element={reports ? <CustomerProfilePage /> : <Navigate to={home} replace />} />
       </Route>
       <Route path="*" element={<Navigate to={home} replace />} />
     </Routes>

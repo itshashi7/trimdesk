@@ -57,6 +57,25 @@ export const ChevronDownIcon = (p: IconProps) => (
   </svg>
 );
 
+export const CalendarIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <rect x="3.5" y="4.5" width="13" height="12" rx="2" />
+    <path d="M3.5 8.5h13M7 3v3M13 3v3" />
+  </svg>
+);
+
+export const ChevronLeftIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="m12 5-5 5 5 5" />
+  </svg>
+);
+
+export const ChevronRightIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="m8 5 5 5-5 5" />
+  </svg>
+);
+
 export const CloseIcon = (p: IconProps) => (
   <svg {...base} {...p}>
     <path d="m5.5 5.5 9 9m0-9-9 9" />

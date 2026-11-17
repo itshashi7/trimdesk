@@ -22,6 +22,8 @@ Show a chain owner, in a 2-minute video and a live link, that:
   Apple-like, generous whitespace, soft cards, thin borders, restrained color.
 - **Neutral base + one accent.** Everything is white/greys; the accent appears only on primary
   buttons, active nav item, chart lines and the bill total.
+  Charts that compare categories (e.g. the UPI / cash / card split) use the validated series
+  colours `--series-1..3` in theme.css, always next to a text label.
 - **Theme tokens:** define all colors as CSS variables in `frontend/src/styles/theme.css`
   (`--accent`, `--accent-contrast`, `--bg`, `--surface`, `--border`, `--text`, `--text-muted`) and map
   them in `tailwind.config`. No hard-coded hex values in components.

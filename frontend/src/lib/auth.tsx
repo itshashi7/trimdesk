@@ -79,5 +79,8 @@ export function useAuth(): AuthContextValue {
 
 export const canBill = (role: Role) => role === 'CASHIER' || role === 'OUTLET_MANAGER';
 
+/** Outlet reports and customer profiles: everyone except the cashier (CLAUDE.md §4). */
+export const canViewReports = (role: Role) => role !== 'CASHIER';
+
 /** Where each role lands after signing in. */
-export const homePath = (role: Role) => (canBill(role) ? '/billing' : '/overview');
+export const homePath = (role: Role) => (canBill(role) ? '/billing' : '/reports/outlet');

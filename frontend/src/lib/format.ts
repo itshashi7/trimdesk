@@ -19,6 +19,26 @@ const istDateTime = new Intl.DateTimeFormat('en-IN', {
 });
 
 export const dateIST = (iso: string) => istDate.format(new Date(iso));
+
+const istIsoDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' });
+
+/** Today's business date in IST as YYYY-MM-DD. */
+export const todayIST = () => istIsoDate.format(new Date());
+
+/** Shift a YYYY-MM-DD date by whole days (calendar arithmetic, no time zone involved). */
+export function shiftDate(isoDate: string, days: number): string {
+  const d = new Date(`${isoDate}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+const longDate = new Intl.DateTimeFormat('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+/** "Monday, 16 November 2026" for a YYYY-MM-DD date. */
+export const longDateLabel = (isoDate: string) => longDate.format(new Date(`${isoDate}T00:00:00Z`));
+
+const istTime = new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit', hour12: true });
+export const timeIST = (iso: string) => istTime.format(new Date(iso));
 export const dateTimeIST = (iso: string) => istDateTime.format(new Date(iso));
 
 /** 98765 43210 */

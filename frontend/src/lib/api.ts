@@ -4,7 +4,11 @@ import type {
   CreateBillRequest,
   Customer,
   CustomerLookup,
+  CustomerProfile,
+  CustomerSearchResult,
   LoginResponse,
+  OutletDayReport,
+  OutletSummary,
   ServiceItem,
 } from './types';
 
@@ -70,4 +74,9 @@ export const api = {
   updateCustomer: (id: number, changes: { phone?: string; name?: string; notes?: string }) =>
     request<Customer>('PATCH', `/customers/${id}`, changes),
   createBill: (body: CreateBillRequest) => request<Bill>('POST', '/bills', body),
+  outlets: () => request<OutletSummary[]>('GET', '/outlets'),
+  outletDay: (outletId: number, date: string) =>
+    request<OutletDayReport>('GET', `/reports/outlet/${outletId}/day?date=${date}`),
+  searchCustomers: (q: string) => request<CustomerSearchResult[]>('GET', `/customers/search?q=${encodeURIComponent(q)}`),
+  customerProfile: (id: number) => request<CustomerProfile>('GET', `/customers/${id}`),
 };

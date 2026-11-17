@@ -16,6 +16,7 @@ public interface BillRepository extends JpaRepository<Bill, Long> {
     @EntityGraph(attributePaths = "outlet")
     List<Bill> findTop5ByCustomerIdOrderByCreatedAtDesc(Long customerId);
 
+    @EntityGraph(attributePaths = "outlet")
     List<Bill> findByCustomerIdOrderByCreatedAtDesc(Long customerId);
 
     long countByCustomerId(Long customerId);

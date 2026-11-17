@@ -22,6 +22,12 @@
   --mck-accent: #1c1c1e;
   --mck-accent-contrast: #ffffff;
 
+  /* Categorical chart colours (validated for colour-blind separation; always shown with labels).
+     Used where one accent cannot tell series apart, e.g. the UPI / cash / card split. */
+  --series-1: #2a78d6; /* blue */
+  --series-2: #1baf7a; /* aqua */
+  --series-3: #eb6834; /* orange */
+
   --danger: #b42318;
   --danger-surface: #fef3f2;
   --success: #067647;

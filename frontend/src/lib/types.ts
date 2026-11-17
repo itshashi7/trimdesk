@@ -70,6 +70,49 @@ export interface CustomerLookup {
   lastVisits: Visit[];
 }
 
+export interface CustomerProfile {
+  customer: Customer;
+  totalVisits: number;
+  totalSpend: number;
+  outletsVisited: number;
+  lastVisit: string | null;
+  /** Visits at outlets outside a franchise owner's scope, left out of this profile. */
+  hiddenVisits: number;
+  visits: Visit[];
+}
+
+export interface CustomerSearchResult {
+  id: number;
+  name: string;
+  phone: string;
+  visits: number;
+  lastVisit: string | null;
+}
+
+export interface OutletSummary {
+  id: number;
+  code: string;
+  name: string;
+  area: string | null;
+  city: string;
+  franchiseName: string;
+}
+
+export interface OutletDayReport {
+  outletId: number;
+  outletCode: string;
+  outletName: string;
+  outletArea: string | null;
+  date: string;
+  bills: number;
+  revenue: number;
+  averageBill: number;
+  discounts: number;
+  taxIncluded: number;
+  payments: { mode: PaymentMode; bills: number; amount: number }[];
+  barbers: { barberId: number; name: string; services: number; revenue: number; commission: number }[];
+}
+
 export interface CreateBillRequest {
   customerId: number;
   items: { serviceId: number; barberId: number }[];

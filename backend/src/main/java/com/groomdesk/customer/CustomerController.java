@@ -4,6 +4,8 @@ import com.groomdesk.auth.CurrentUser;
 import com.groomdesk.customer.CustomerDtos.CreateCustomerRequest;
 import com.groomdesk.customer.CustomerDtos.CustomerDto;
 import com.groomdesk.customer.CustomerDtos.CustomerLookupDto;
+import com.groomdesk.customer.CustomerDtos.CustomerProfileDto;
+import com.groomdesk.customer.CustomerDtos.CustomerSearchResult;
 import com.groomdesk.customer.CustomerDtos.UpdateCustomerRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/customers")
 public class CustomerController {
@@ -25,6 +29,18 @@ public class CustomerController {
 
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
+    }
+
+    /** Phone prefix (digits) or name search, up to 20 results; for managers, owners and HQ. */
+    @GetMapping("/search")
+    public List<CustomerSearchResult> search(CurrentUser user, @RequestParam("q") String query) {
+        return customerService.search(user, query);
+    }
+
+    /** Profile with the full visit history across outlets (owners: their outlets only). */
+    @GetMapping("/{id}")
+    public CustomerProfileDto profile(CurrentUser user, @PathVariable long id) {
+        return customerService.profile(user, id);
     }
 
     /** 200 with customer + last 5 visits (any outlet), 404 if the phone is unknown. */
