@@ -57,6 +57,12 @@ export const ChevronDownIcon = (p: IconProps) => (
   </svg>
 );
 
+export const DownloadIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M10 3.5v9M6.5 9 10 12.5 13.5 9M4 15.5h12" />
+  </svg>
+);
+
 export const CalendarIcon = (p: IconProps) => (
   <svg {...base} {...p}>
     <rect x="3.5" y="4.5" width="13" height="12" rx="2" />

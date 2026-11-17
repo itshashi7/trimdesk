@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { canBill, canViewReports, useAuth } from '../lib/auth';
+import { canBill, canViewDashboard, canViewReports, useAuth } from '../lib/auth';
 import { roleLabel } from '../lib/format';
 import { LogoutIcon, StoreIcon } from './Icons';
 
@@ -9,6 +9,12 @@ export function AppShell() {
 
   const nav = [
     ...(canBill(user.role) ? [{ to: '/billing', label: 'Billing' }] : []),
+    ...(canViewDashboard(user.role)
+      ? [
+          { to: '/dashboard', label: 'Dashboard' },
+          { to: '/royalty', label: 'Royalty' },
+        ]
+      : []),
     ...(canViewReports(user.role)
       ? [
           { to: '/reports/outlet', label: 'Outlet report' },
@@ -22,16 +28,16 @@ export function AppShell() {
   return (
     <div className="flex h-screen flex-col">
       <header className="sticky top-0 z-30 border-b border-border bg-surface">
-        <div className="flex h-[52px] items-center gap-3 px-4 sm:gap-6 sm:px-5">
-          <span className="shrink-0 text-[16px] font-semibold tracking-[-0.02em] text-text">GroomDesk</span>
+        <div className="flex flex-wrap items-center gap-x-3 px-4 sm:h-[52px] sm:flex-nowrap sm:gap-6 sm:px-5">
+          <span className="flex h-[52px] shrink-0 items-center text-[16px] font-semibold tracking-[-0.02em] text-text sm:h-auto">GroomDesk</span>
 
-          <nav aria-label="Main" className="-mx-1 flex min-w-0 items-center gap-1 overflow-x-auto px-1">
+          <nav aria-label="Main" className="-mx-1 order-last flex w-full min-w-0 items-center gap-1 overflow-x-auto px-1 pb-2 sm:order-none sm:w-auto sm:pb-0">
             {nav.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-[13.5px] font-medium transition-colors ${
+                  `shrink-0 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-colors sm:px-3 sm:text-[13.5px] ${
                     isActive ? 'bg-accent text-accent-contrast' : 'text-text-muted hover:bg-surface-muted hover:text-text'
                   }`
                 }

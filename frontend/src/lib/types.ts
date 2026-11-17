@@ -113,6 +113,45 @@ export interface OutletDayReport {
   barbers: { barberId: number; name: string; services: number; revenue: number; commission: number }[];
 }
 
+export interface HqSummary {
+  from: string;
+  to: string;
+  totals: { revenue: number; bills: number; averageBill: number; customers: number; activeOutlets: number; totalOutlets: number };
+  today: { date: string; revenue: number; bills: number; outletsBilling: number };
+  trend: { date: string; revenue: number; bills: number }[];
+  outlets: {
+    outletId: number;
+    code: string;
+    name: string;
+    franchiseName: string;
+    revenue: number;
+    bills: number;
+    averageBill: number;
+    customers: number;
+  }[];
+  topServices: { serviceId: number; name: string; category: ServiceCategory; count: number; revenue: number }[];
+}
+
+export interface RoyaltyReport {
+  month: string;
+  from: string;
+  to: string;
+  franchises: {
+    franchiseId: number;
+    name: string;
+    ownerName: string;
+    royaltyPercent: number;
+    bills: number;
+    revenue: number;
+    taxable: number;
+    royaltyDue: number;
+    outlets: { outletId: number; code: string; name: string; bills: number; revenue: number; taxable: number }[];
+  }[];
+  totalRevenue: number;
+  totalTaxable: number;
+  totalRoyalty: number;
+}
+
 export interface CreateBillRequest {
   customerId: number;
   items: { serviceId: number; barberId: number }[];

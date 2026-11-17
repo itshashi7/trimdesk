@@ -6,7 +6,9 @@ import type {
   CustomerLookup,
   CustomerProfile,
   CustomerSearchResult,
+  HqSummary,
   LoginResponse,
+  RoyaltyReport,
   OutletDayReport,
   OutletSummary,
   ServiceItem,
@@ -79,4 +81,6 @@ export const api = {
     request<OutletDayReport>('GET', `/reports/outlet/${outletId}/day?date=${date}`),
   searchCustomers: (q: string) => request<CustomerSearchResult[]>('GET', `/customers/search?q=${encodeURIComponent(q)}`),
   customerProfile: (id: number) => request<CustomerProfile>('GET', `/customers/${id}`),
+  hqSummary: (from: string, to: string) => request<HqSummary>('GET', `/reports/hq/summary?from=${from}&to=${to}`),
+  royalty: (month: string) => request<RoyaltyReport>('GET', `/reports/royalty?month=${month}`),
 };

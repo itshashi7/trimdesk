@@ -82,5 +82,8 @@ export const canBill = (role: Role) => role === 'CASHIER' || role === 'OUTLET_MA
 /** Outlet reports and customer profiles: everyone except the cashier (CLAUDE.md §4). */
 export const canViewReports = (role: Role) => role !== 'CASHIER';
 
+/** Chain dashboard and royalty: HQ (all outlets) and franchise owners (their outlets). */
+export const canViewDashboard = (role: Role) => role === 'HQ_ADMIN' || role === 'FRANCHISE_OWNER';
+
 /** Where each role lands after signing in. */
-export const homePath = (role: Role) => (canBill(role) ? '/billing' : '/reports/outlet');
+export const homePath = (role: Role) => (canBill(role) ? '/billing' : canViewDashboard(role) ? '/dashboard' : '/reports/outlet');

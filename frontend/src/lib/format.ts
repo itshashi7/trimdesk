@@ -1,5 +1,9 @@
 const inr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 });
 const inrWhole = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+const inrCompact = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', notation: 'compact', maximumFractionDigits: 1 });
+
+/** ₹1.6L, ₹1.6Cr: Indian compact units for chart axes. */
+export const moneyCompact = (value: number) => inrCompact.format(value);
 
 /** ₹1,23,456.00 (Indian digit grouping). */
 export const money = (value: number) => inr.format(value);
