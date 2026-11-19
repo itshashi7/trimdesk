@@ -107,38 +107,39 @@ function RoyaltyBody({ data, inProgress }: { data: RoyaltyReport; inProgress: bo
             <thead>
               <tr className="text-left text-2xs font-medium text-text-muted">
                 <th scope="col" className="pb-2 font-medium">Franchise / outlet</th>
-                <th scope="col" className="hidden pb-2 text-right font-medium sm:table-cell">Bills</th>
-                <th scope="col" className="hidden pb-2 text-right font-medium sm:table-cell">Revenue</th>
-                <th scope="col" className="pb-2 text-right font-medium">Taxable</th>
-                <th scope="col" className="pb-2 text-right font-medium">Rate</th>
-                <th scope="col" className="pb-2 text-right font-medium">Royalty due</th>
+                <th scope="col" className="hidden pb-2 pl-3 text-right font-medium sm:table-cell">Bills</th>
+                <th scope="col" className="hidden pb-2 pl-3 text-right font-medium sm:table-cell">Revenue</th>
+                <th scope="col" className="pb-2 pl-3 text-right font-medium">Taxable</th>
+                <th scope="col" className="hidden pb-2 pl-3 text-right font-medium sm:table-cell">Rate</th>
+                <th scope="col" className="whitespace-nowrap pb-2 pl-3 text-right font-medium">Royalty due</th>
               </tr>
             </thead>
             <tbody>
               {data.franchises.map((f) => (
                 <Fragment key={f.franchiseId}>
-                  <tr className="border-t border-border-strong">
+                  <tr className="border-t border-border-strong align-baseline">
                     <th scope="row" className="pb-1.5 pt-3 text-left font-semibold text-text">
                       {f.name}
                       <span className="block text-2xs font-normal text-text-muted">
                         {f.ownerName} · {f.outlets.length} {f.outlets.length === 1 ? 'outlet' : 'outlets'}
+                        <span className="sm:hidden"> · {f.royaltyPercent}% royalty</span>
                       </span>
                     </th>
-                    <td className="hidden pb-1.5 pt-3 text-right font-medium text-text tabular sm:table-cell">{f.bills.toLocaleString('en-IN')}</td>
-                    <td className="hidden pb-1.5 pt-3 text-right font-medium text-text tabular sm:table-cell">{money(f.revenue)}</td>
-                    <td className="pb-1.5 pt-3 text-right font-medium text-text tabular">{money(f.taxable)}</td>
-                    <td className="pb-1.5 pt-3 text-right text-text tabular">{f.royaltyPercent}%</td>
-                    <td className="pb-1.5 pt-3 text-right font-semibold text-text tabular">{money(f.royaltyDue)}</td>
+                    <td className="hidden whitespace-nowrap pb-1.5 pl-3 pt-3 text-right font-medium text-text tabular sm:table-cell">{f.bills.toLocaleString('en-IN')}</td>
+                    <td className="hidden whitespace-nowrap pb-1.5 pl-3 pt-3 text-right font-medium text-text tabular sm:table-cell">{money(f.revenue)}</td>
+                    <td className="whitespace-nowrap pb-1.5 pl-3 pt-3 text-right font-medium text-text tabular">{money(f.taxable)}</td>
+                    <td className="hidden whitespace-nowrap pb-1.5 pl-3 pt-3 text-right text-text tabular sm:table-cell">{f.royaltyPercent}%</td>
+                    <td className="whitespace-nowrap pb-1.5 pl-3 pt-3 text-right font-semibold text-text tabular">{money(f.royaltyDue)}</td>
                   </tr>
                   {f.outlets.map((o) => (
-                    <tr key={o.outletId} className="text-text-muted">
+                    <tr key={o.outletId} className="align-baseline text-text-muted">
                       <td className="py-1 pl-4">
-                        {o.name} <span className="text-2xs tabular">{o.code}</span>
+                        {o.name} <span className="whitespace-nowrap text-2xs tabular">{o.code}</span>
                       </td>
-                      <td className="hidden py-1 text-right tabular sm:table-cell">{o.bills.toLocaleString('en-IN')}</td>
-                      <td className="hidden py-1 text-right tabular sm:table-cell">{money(o.revenue)}</td>
-                      <td className="py-1 text-right tabular">{money(o.taxable)}</td>
-                      <td />
+                      <td className="hidden whitespace-nowrap py-1 pl-3 text-right tabular sm:table-cell">{o.bills.toLocaleString('en-IN')}</td>
+                      <td className="hidden whitespace-nowrap py-1 pl-3 text-right tabular sm:table-cell">{money(o.revenue)}</td>
+                      <td className="whitespace-nowrap py-1 pl-3 text-right tabular">{money(o.taxable)}</td>
+                      <td className="hidden sm:table-cell" />
                       <td />
                     </tr>
                   ))}
@@ -148,13 +149,13 @@ function RoyaltyBody({ data, inProgress }: { data: RoyaltyReport; inProgress: bo
             <tfoot>
               <tr className="border-t-2 border-text">
                 <th scope="row" className="pt-3 text-left font-semibold text-text">Grand total</th>
-                <td className="hidden pt-3 text-right font-semibold text-text tabular sm:table-cell">
+                <td className="hidden whitespace-nowrap pl-3 pt-3 text-right font-semibold text-text tabular sm:table-cell">
                   {data.franchises.reduce((n, f) => n + f.bills, 0).toLocaleString('en-IN')}
                 </td>
-                <td className="hidden pt-3 text-right font-semibold text-text tabular sm:table-cell">{money(data.totalRevenue)}</td>
-                <td className="pt-3 text-right font-semibold text-text tabular">{money(data.totalTaxable)}</td>
-                <td />
-                <td className="pt-3 text-right text-[15px] font-semibold text-text tabular">{money(data.totalRoyalty)}</td>
+                <td className="hidden whitespace-nowrap pl-3 pt-3 text-right font-semibold text-text tabular sm:table-cell">{money(data.totalRevenue)}</td>
+                <td className="whitespace-nowrap pl-3 pt-3 text-right font-semibold text-text tabular">{money(data.totalTaxable)}</td>
+                <td className="hidden sm:table-cell" />
+                <td className="whitespace-nowrap pl-3 pt-3 text-right text-[13.5px] font-semibold text-text tabular sm:text-[15px]">{money(data.totalRoyalty)}</td>
               </tr>
             </tfoot>
           </table>
