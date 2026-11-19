@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import { ChevronLeftIcon } from '../components/Icons';
-import { ApiError, api } from '../lib/api';
+import { ApiError, api, errorMessage } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { dateIST, money, moneyWhole, phoneDisplay, timeIST } from '../lib/format';
 import type { CustomerProfile } from '../lib/types';
@@ -29,9 +29,7 @@ export function CustomerProfilePage() {
         <p role="alert" className="mt-4 rounded-card bg-danger-surface px-4 py-3 text-[13.5px] text-danger">
           {profile.error instanceof ApiError && profile.error.status === 404
             ? 'This customer is not in your records.'
-            : profile.error instanceof ApiError
-              ? profile.error.message
-              : 'The profile could not load.'}
+            : errorMessage(profile.error, 'The profile could not load.')}
         </p>
       ) : !profile.data ? (
         <div className="mt-4 space-y-4" aria-busy="true" aria-label="Loading profile">

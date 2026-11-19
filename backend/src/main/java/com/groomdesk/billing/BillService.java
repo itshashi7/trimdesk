@@ -1,5 +1,7 @@
 package com.groomdesk.billing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.groomdesk.auth.AccessScope;
 import com.groomdesk.auth.AppUser;
 import com.groomdesk.auth.AppUserRepository;
@@ -30,6 +32,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class BillService {
+
+    private static final Logger log = LoggerFactory.getLogger(BillService.class);
 
     private static final BigDecimal MAX_PERCENT = BigDecimal.valueOf(100);
 
@@ -109,6 +113,8 @@ public class BillService {
         bill.setTotal(amounts.total());
         items.forEach(bill::addItem);
         bills.saveAndFlush(bill);
+        log.info("Bill {} saved: {} items, total {}, {}, customer {}", bill.getBillNo(), bill.getItems().size(),
+                bill.getTotal(), bill.getPaymentMode(), customer.getId());
         return BillDto.from(bill);
     }
 

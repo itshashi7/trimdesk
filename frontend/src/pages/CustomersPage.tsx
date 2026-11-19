@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronRightIcon, SearchIcon } from '../components/Icons';
-import { ApiError, api } from '../lib/api';
+import { api, errorMessage } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { dateIST, phoneDisplay } from '../lib/format';
 
@@ -61,7 +61,7 @@ export function CustomersPage() {
           <p className="px-1 text-[13.5px] text-text-muted">Type at least 2 characters: the start of a phone number, or part of a name.</p>
         ) : search.isError ? (
           <p role="alert" className="rounded-card bg-danger-surface px-4 py-3 text-[13.5px] text-danger">
-            {search.error instanceof ApiError ? search.error.message : 'Search failed. Try again.'}
+            {errorMessage(search.error, 'Search failed. Try again.')}
           </p>
         ) : search.isPending ? (
           <p className="px-1 text-[13.5px] text-text-muted">Searching…</p>

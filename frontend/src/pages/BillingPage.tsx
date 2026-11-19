@@ -7,7 +7,7 @@ import { ServiceGrid, serviceFlashId } from '../components/billing/ServiceGrid';
 import { ShortcutLegend } from '../components/billing/ShortcutLegend';
 import { Receipt } from '../components/Receipt';
 import { useToast } from '../components/Toast';
-import { ApiError, api } from '../lib/api';
+import { ApiError, api, errorMessage } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { parseDiscount, previewBill } from '../lib/billMath';
 import { flash } from '../lib/flash';
@@ -29,7 +29,7 @@ function sortServices(services: ServiceItem[]) {
   });
 }
 
-const errorText = (e: unknown, fallback: string) => (e instanceof ApiError ? e.message : fallback);
+const errorText = errorMessage;
 
 export function BillingPage() {
   const { user } = useAuth();

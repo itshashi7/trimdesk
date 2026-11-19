@@ -24,6 +24,14 @@ spring:
   jackson:
     time-zone: UTC
 
+logging:
+  pattern:
+    # Every line carries the request's ticket number, e.g. "INFO [TD-20261120-7F3A9C]".
+    level: "%5p [%X{ticket:-}]"
+  level:
+    # Raise to DEBUG on the host (LOGGING_LEVEL_COM_GROOMDESK=DEBUG) for more detail.
+    com.groomdesk: INFO
+
 groomdesk:
   jwt:
     # Demo default only. Set JWT_SECRET (32+ bytes) on any public deployment.

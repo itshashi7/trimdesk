@@ -3,7 +3,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { DownloadIcon } from '../components/Icons';
 import { MenuSelect } from '../components/MenuSelect';
-import { ApiError, api } from '../lib/api';
+import { api, errorMessage } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { APP_SLUG } from '../lib/brand';
 import { money, todayIST } from '../lib/format';
@@ -68,7 +68,7 @@ export function RoyaltyPage() {
       <div className="mt-5">
         {report.isError && !data ? (
           <p role="alert" className="rounded-card bg-danger-surface px-4 py-3 text-[13.5px] text-danger">
-            {report.error instanceof ApiError ? report.error.message : 'The royalty report could not load.'}
+            {errorMessage(report.error, 'The royalty report could not load.')}
           </p>
         ) : !data ? (
           <div className="space-y-4" aria-busy="true" aria-label="Loading royalty report">

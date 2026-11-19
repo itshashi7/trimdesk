@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '../components/Icons';
 import { DatePicker } from '../components/DatePicker';
 import { MenuSelect } from '../components/MenuSelect';
-import { ApiError, api } from '../lib/api';
+import { api, errorMessage } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { dateIST, longDateLabel, money, moneyWhole, shiftDate, todayIST } from '../lib/format';
 import type { OutletDayReport, PaymentMode } from '../lib/types';
@@ -107,7 +107,7 @@ export function OutletReportPage() {
       <div className="mt-2">
         {reportQuery.isError ? (
           <Notice tone="error">
-            {reportQuery.error instanceof ApiError ? reportQuery.error.message : 'The report could not load.'}
+            {errorMessage(reportQuery.error, 'The report could not load.')}
           </Notice>
         ) : !report ? (
           <Skeleton />

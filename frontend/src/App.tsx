@@ -15,6 +15,11 @@ import { RoyaltyPage } from './pages/RoyaltyPage';
 // so the cashier's billing screen stays small and fast.
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })));
 
+/** Development-only: open any page with ?__crash to see the crash screen. Removed from production builds. */
+function CrashTest(): never {
+  throw new Error('Test crash (development only, triggered by ?__crash)');
+}
+
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   return user ? <>{children}</> : <Navigate to="/login" replace />;
@@ -28,6 +33,8 @@ export function App() {
   // Billing is a keyboard counter. Hide it only on touch phones and portrait tablets, not on a
   // laptop zoomed in with Ctrl + (which also narrows the page). CLAUDE.md §6.
   const touchScreenTooSmall = useMediaQuery('(pointer: coarse) and (max-width: 1023px)');
+
+  if (import.meta.env.DEV && new URLSearchParams(window.location.search).has('__crash')) return <CrashTest />;
 
   return (
     <Routes>

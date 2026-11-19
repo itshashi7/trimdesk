@@ -1,5 +1,9 @@
 package com.groomdesk.customer;
 
+import com.groomdesk.logging.LogText;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
 import com.groomdesk.auth.AccessScope;
 import com.groomdesk.auth.CurrentUser;
 import com.groomdesk.auth.Role;
@@ -40,6 +44,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class CustomerService {
+
+    private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
 
     private static final Pattern PHONE = Pattern.compile(CustomerDtos.PHONE_REGEX);
     private static final int RECENT_VISITS = 5;
@@ -162,6 +168,8 @@ public class CustomerService {
             customer.setNotes(request.notes().trim());
         }
         customers.saveAndFlush(customer);
+        log.info("Customer {} created at outlet {} (phone {})", customer.getId(), outletId,
+                LogText.maskPhones(customer.getPhone()));
         return toDto(customer);
     }
 
@@ -192,6 +200,11 @@ public class CustomerService {
             customer.setNotes(request.notes().isBlank() ? null : request.notes().trim());
         }
         customers.saveAndFlush(customer);
+        List<String> fields = new ArrayList<>();
+        if (request.phone() != null) fields.add("phone");
+        if (request.name() != null) fields.add("name");
+        if (request.notes() != null) fields.add("notes");
+        log.info("Customer {} edited: {}", customer.getId(), fields);
         return toDto(customer);
     }
 

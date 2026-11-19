@@ -1,5 +1,5 @@
 import { useState, type KeyboardEvent } from 'react';
-import { ApiError } from '../../lib/api';
+import { ApiError, errorMessage } from '../../lib/api';
 import { applyNameCase, normalizeName } from '../../lib/names';
 import type { Customer } from '../../lib/types';
 import { Keycap } from '../Keycap';
@@ -46,7 +46,7 @@ export function CustomerEditForm({ customer, onSave, onCancel }: Props) {
       await onSave(changes);
     } catch (e) {
       if (e instanceof ApiError && Object.keys(e.fieldErrors).length) setFieldErrors(e.fieldErrors);
-      setError(e instanceof ApiError ? e.message : 'Could not save the changes.');
+      setError(errorMessage(e, 'Could not save the changes.'));
       setSaving(false);
     }
   }

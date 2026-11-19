@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BrandMark } from '../components/BrandMark';
 import { Keycap } from '../components/Keycap';
-import { ApiError } from '../lib/api';
+import { errorMessage } from '../lib/api';
 import { homePath, useAuth } from '../lib/auth';
 import { APP_NAME } from '../lib/brand';
 
@@ -31,7 +31,7 @@ export function LoginPage() {
       const profile = await login(user, pass);
       navigate(homePath(profile.role), { replace: true });
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : 'Sign-in failed. Try again.');
+      setError(errorMessage(e, 'Sign-in failed. Try again.'));
       setBusy(null);
     }
   }

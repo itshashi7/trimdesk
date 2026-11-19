@@ -14,17 +14,36 @@ import type {
   ServiceItem,
 } from './types';
 
+import { rememberFailedTicket } from './errorReporting';
+import { log } from './log';
+
 const BASE = `${import.meta.env.VITE_API_URL ?? ''}/api`;
 
-/** An API failure, carrying the server's problem-detail message and per-field errors. */
+/** Response header with the server's ticket number for the request (see backend Tickets). */
+const TICKET_HEADER = 'X-Ticket-Id';
+
+/**
+ * An API failure, carrying the server's problem-detail message, per-field errors and the ticket
+ * number that finds this request in the server logs.
+ */
 export class ApiError extends Error {
   constructor(
     readonly status: number,
     message: string,
     readonly fieldErrors: Record<string, string> = {},
+    readonly ticket: string | null = null,
   ) {
     super(message);
   }
+}
+
+/**
+ * Message to show for a failed request, with the ticket a cashier can quote:
+ * "Could not save the bill. (Ref TD-20261120-7F3A9C)".
+ */
+export function errorMessage(error: unknown, fallback: string): string {
+  if (!(error instanceof ApiError)) return fallback;
+  return error.ticket ? `${error.message} (Ref ${error.ticket})` : error.message;
 }
 
 let currentToken: string | null = null;
@@ -41,11 +60,15 @@ async function request<T>(method: string, path: string, body?: unknown, auth = t
   if (auth && currentToken) headers.Authorization = `Bearer ${currentToken}`;
 
   let res: Response;
+  const started = performance.now();
   try {
     res = await fetch(BASE + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
-  } catch {
-    throw new ApiError(0, 'Cannot reach the server. Check that the backend is running.');
+  } catch (e) {
+    log.warn(`${method} ${path} failed: server unreachable`, e);
+    throw new ApiError(0, 'Cannot reach the server. Check your connection and try again.');
   }
+  const ticket = res.headers.get(TICKET_HEADER);
+  const ms = Math.round(performance.now() - started);
 
   if (res.status === 401 && auth) {
     onUnauthorized();
@@ -60,8 +83,12 @@ async function request<T>(method: string, path: string, body?: unknown, auth = t
     } catch {
       // non-JSON error body
     }
-    throw new ApiError(res.status, detail, fieldErrors);
+    // 404 is a normal answer (e.g. an unknown phone at the counter), not a problem worth a warning.
+    (res.status === 404 ? log.debug : log.warn)(`${method} ${path} -> ${res.status} in ${ms} ms`, { ticket, detail });
+    rememberFailedTicket(ticket);
+    throw new ApiError(res.status, detail, fieldErrors, ticket);
   }
+  log.debug(`${method} ${path} -> ${res.status} in ${ms} ms`, ticket);
   return (res.status === 204 ? undefined : await res.json()) as T;
 }
 

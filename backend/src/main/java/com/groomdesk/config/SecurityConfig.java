@@ -2,6 +2,7 @@ package com.groomdesk.config;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import org.springframework.beans.factory.annotation.Value;
+import com.groomdesk.logging.Tickets;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +51,8 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, LOGIN_PATH).permitAll()
+                        // Browser crash reports may come before sign-in; size- and rate-limited.
+                        .requestMatchers(HttpMethod.POST, "/api/client-errors").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         // Only the API needs a token. Everything else is the built frontend
@@ -109,6 +112,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(allowedOrigins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        // Lets a cross-origin frontend (local dev on another port) read the ticket number.
+        config.setExposedHeaders(List.of(Tickets.HEADER));
         config.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", config);

@@ -66,6 +66,30 @@ Open the domain in a private window:
 - [ ] A deep link such as `/royalty` opens directly (not a 404) after signing in
 - [ ] Phone: dashboard and royalty pages fit
 
+## Debugging with ticket numbers
+
+Every API response carries a ticket number such as `TD-20261120-7F3A9C` (header `X-Ticket-Id`,
+and a `ticket` field in every error). Error messages on screen end with `(Ref TD-…)`, and the crash
+screen shows one too.
+
+1. Ask for the reference shown on screen.
+2. Railway → app service → **Deployments** → **View logs** (or **Observability**) → search the ticket.
+3. You see that request's lines together, for example:
+   ```
+   WARN [TD-20261120-B1BC72] ApiExceptionHandler : 409 on POST /api/customers: A customer with this phone already exists
+   INFO [TD-20261120-B1BC72] access              : POST /api/customers -> 409 in 20 ms · cashier_tnr/CASHIER
+   ```
+
+What gets logged: one access line per API call (method, path, status, time, user), logins and failed
+logins (username only), saved bills, created and edited customers, every error (4xx as one WARN line,
+crashes as ERROR with a stack trace), and browser crashes (`com.groomdesk.client`). Phone numbers are
+masked (`99XXXXXX67`); passwords, tokens and request bodies are never logged.
+
+- More detail: set `LOGGING_LEVEL_COM_GROOMDESK=DEBUG` on the app service and deploy; remove it after.
+- Browser console detail on any machine: run `localStorage.setItem('trimdesk.debug', '1')` in the
+  console and reload (production otherwise prints warnings and errors only).
+- Bad deploy: **Deployments** → previous successful deploy → **Redeploy**.
+
 ## Notes
 
 - Demo users and the `demo123` password are printed on the login screen. Use this deployment for

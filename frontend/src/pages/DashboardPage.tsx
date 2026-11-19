@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ServiceIcon } from '../components/billing/ServiceIcon';
 import { ChevronDownIcon } from '../components/Icons';
-import { ApiError, api } from '../lib/api';
+import { api, errorMessage } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { dateIST, longDateLabel, money, moneyCompact, moneyWhole, shiftDate, todayIST } from '../lib/format';
 import type { HqSummary } from '../lib/types';
@@ -63,7 +63,7 @@ export function DashboardPage() {
       <div className="mt-5">
         {summary.isError && !data ? (
           <p role="alert" className="rounded-card bg-danger-surface px-4 py-3 text-[13.5px] text-danger">
-            {summary.error instanceof ApiError ? summary.error.message : 'The dashboard could not load.'}
+            {errorMessage(summary.error, 'The dashboard could not load.')}
           </p>
         ) : !data ? (
           <Skeleton />
