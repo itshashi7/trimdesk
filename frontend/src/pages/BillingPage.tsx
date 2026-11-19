@@ -12,6 +12,7 @@ import { useAuth } from '../lib/auth';
 import { parseDiscount, previewBill } from '../lib/billMath';
 import { flash } from '../lib/flash';
 import { dateTimeIST, money } from '../lib/format';
+import { normalizeName } from '../lib/names';
 import type { Bill, CustomerLookup, PaymentMode, ServiceItem } from '../lib/types';
 
 const PAY_KEYS: Record<string, PaymentMode> = { F2: 'CASH', F3: 'UPI', F4: 'CARD' };
@@ -141,7 +142,7 @@ export function BillingPage() {
   }
 
   async function createCustomer() {
-    const name = newName.trim();
+    const name = normalizeName(newName);
     if (!name) {
       setLookupError('Enter the customer name to continue.');
       return;

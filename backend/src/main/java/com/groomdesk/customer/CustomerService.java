@@ -157,7 +157,7 @@ public class CustomerService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "A customer with this phone already exists");
         }
         Outlet outlet = outlets.getReferenceById(outletId);
-        Customer customer = new Customer(phone, request.name().trim(), outlet);
+        Customer customer = new Customer(phone, PersonNames.normalize(request.name()), outlet);
         if (request.notes() != null && !request.notes().isBlank()) {
             customer.setNotes(request.notes().trim());
         }
@@ -186,7 +186,7 @@ public class CustomerService {
             }
         }
         if (request.name() != null) {
-            customer.setName(request.name().trim());
+            customer.setName(PersonNames.normalize(request.name()));
         }
         if (request.notes() != null) {
             customer.setNotes(request.notes().isBlank() ? null : request.notes().trim());

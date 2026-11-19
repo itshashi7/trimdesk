@@ -1,5 +1,6 @@
 import type { RefObject } from 'react';
 import { dateIST, moneyWhole, money, phoneDisplay } from '../../lib/format';
+import { applyNameCase } from '../../lib/names';
 import type { CustomerLookup } from '../../lib/types';
 import { EditIcon, SearchIcon } from '../Icons';
 import { Keycap } from '../Keycap';
@@ -121,7 +122,8 @@ function NewCustomer({ phone, newName, onNewNameChange, onCreate, nameRef, statu
         ref={nameRef}
         value={newName}
         maxLength={120}
-        onChange={(e) => onNewNameChange(e.target.value)}
+        onChange={(e) => onNewNameChange(applyNameCase(e.target))}
+        autoCapitalize="words"
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             e.preventDefault();

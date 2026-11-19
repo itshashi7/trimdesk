@@ -1,5 +1,6 @@
 import { useState, type KeyboardEvent } from 'react';
 import { ApiError } from '../../lib/api';
+import { applyNameCase, normalizeName } from '../../lib/names';
 import type { Customer } from '../../lib/types';
 import { Keycap } from '../Keycap';
 
@@ -31,7 +32,7 @@ export function CustomerEditForm({ customer, onSave, onCancel }: Props) {
 
     // Send only what changed.
     const changes: CustomerChanges = {};
-    if (name.trim() !== customer.name) changes.name = name.trim();
+    if (normalizeName(name) !== customer.name) changes.name = normalizeName(name);
     if (phone !== customer.phone) changes.phone = phone;
     if (notes.trim() !== (customer.notes ?? '')) changes.notes = notes.trim();
     if (Object.keys(changes).length === 0) {
@@ -75,7 +76,8 @@ export function CustomerEditForm({ customer, onSave, onCancel }: Props) {
             autoFocus
             value={name}
             maxLength={120}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setName(applyNameCase(e.target))}
+            autoCapitalize="words"
             aria-invalid={!!fieldErrors.name}
             className={`${input} ${fieldErrors.name ? 'border-danger' : 'border-border'}`}
           />
