@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- TrimDesk mark: same gradient tile and white scissors as components/BrandMark.tsx.
+       Scissors geometry from Lucide (ISC licence). -->
+  <defs>
+    <linearGradient id="tile" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#5ea8ff"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <clipPath id="round">
+      <rect width="64" height="64" rx="19"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#round)">
+    <rect width="64" height="64" fill="url(#tile)"/>
+    <rect width="64" height="32" fill="#ffffff" fill-opacity="0.15"/>
+  </g>
+  <g transform="translate(14.5 14.5) scale(1.46)" fill="none" stroke="#ffffff" stroke-width="2.5"
+     stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="6" cy="6" r="3"/>
+    <path d="M8.12 8.12 12 12"/>
+    <path d="M20 4 8.12 15.88"/>
+    <circle cx="6" cy="18" r="3"/>
+    <path d="M14.8 14.8 20 20"/>
+  </g>
+</svg>
