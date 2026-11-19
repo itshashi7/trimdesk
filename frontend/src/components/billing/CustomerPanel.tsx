@@ -12,6 +12,9 @@ interface Props {
   phone: string;
   onPhoneChange: (value: string) => void;
   onLookup: () => void;
+  /** Up/Down in the phone field: step through numbers already looked up, like a shell. */
+  onHistory: (direction: 'older' | 'newer') => void;
+  hasHistory: boolean;
   phoneRef: RefObject<HTMLInputElement>;
   status: LookupStatus;
   error: string | null;
@@ -38,8 +41,16 @@ export function CustomerPanel(props: Props) {
       <div className="px-4 pt-3">
         <label htmlFor="phone" className="mb-1.5 flex items-center justify-between text-[13px] font-semibold text-text">
           Customer phone
-          <span className="flex items-center gap-1 text-2xs font-normal text-text-muted">
-            <Keycap>/</Keycap> to focus
+          <span className="flex items-center gap-3 text-2xs font-normal text-text-muted">
+            {props.hasHistory && (
+              <span className="flex items-center gap-1">
+                <Keycap>↑</Keycap>
+                <Keycap>↓</Keycap> recent
+              </span>
+            )}
+            <span className="flex items-center gap-1">
+              <Keycap>/</Keycap> to focus
+            </span>
           </span>
         </label>
         <div className="relative">
@@ -58,6 +69,9 @@ export function CustomerPanel(props: Props) {
               if (e.key === 'Enter') {
                 e.preventDefault();
                 props.onLookup();
+              } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                props.onHistory(e.key === 'ArrowUp' ? 'older' : 'newer');
               }
             }}
             placeholder="10-digit mobile number"

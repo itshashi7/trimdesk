@@ -13,6 +13,7 @@ import { parseDiscount, previewBill } from '../lib/billMath';
 import { flash } from '../lib/flash';
 import { dateTimeIST, money } from '../lib/format';
 import { normalizeName } from '../lib/names';
+import { usePhoneHistory } from '../hooks/usePhoneHistory';
 import type { Bill, CustomerLookup, PaymentMode, ServiceItem } from '../lib/types';
 
 const PAY_KEYS: Record<string, PaymentMode> = { F2: 'CASH', F3: 'UPI', F4: 'CARD' };
@@ -43,6 +44,7 @@ export function BillingPage() {
   const barbers = useMemo(() => barbersQuery.data ?? [], [barbersQuery.data]);
 
   const [phone, setPhone] = useState('');
+  const phoneHistory = usePhoneHistory(user?.id);
   const [status, setStatus] = useState<LookupStatus>('idle');
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [lookup, setLookup] = useState<CustomerLookup | null>(null);
@@ -124,6 +126,7 @@ export function BillingPage() {
       setLookupError('Enter a 10-digit mobile number starting with 6, 7, 8 or 9.');
       return;
     }
+    phoneHistory.remember(phone);
     setStatus('loading');
     setLookupError(null);
     try {
@@ -381,7 +384,15 @@ export function BillingPage() {
         <div className="flex min-h-0 flex-col gap-4">
           <CustomerPanel
             phone={phone}
-            onPhoneChange={onPhoneChange}
+            onPhoneChange={(value) => {
+              phoneHistory.reset();
+              onPhoneChange(value);
+            }}
+            onHistory={(direction) => {
+              const value = phoneHistory.step(direction, phone);
+              if (value !== null) onPhoneChange(value);
+            }}
+            hasHistory={phoneHistory.count > 0}
             onLookup={() => void lookUp()}
             phoneRef={phoneRef}
             status={status}
