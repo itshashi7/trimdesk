@@ -1,6 +1,8 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
+import { BillingUnavailable } from './components/billing/BillingUnavailable';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import { canBill, canViewDashboard, canViewReports, homePath, useAuth } from './lib/auth';
 import { BillingPage } from './pages/BillingPage';
 import { CustomerProfilePage } from './pages/CustomerProfilePage';
@@ -23,6 +25,8 @@ export function App() {
   const home = user ? homePath(user.role) : '/login';
   const reports = user !== null && canViewReports(user.role);
   const dashboard = user !== null && canViewDashboard(user.role);
+  // Billing is a keyboard counter for laptops; narrower screens get a notice instead (CLAUDE.md §6).
+  const wideEnoughToBill = useMediaQuery('(min-width: 1024px)');
 
   return (
     <Routes>
@@ -36,7 +40,13 @@ export function App() {
       >
         <Route
           path="/billing"
-          element={user && canBill(user.role) ? <BillingPage /> : <Navigate to={home} replace />}
+          element={
+            user && canBill(user.role) ? (
+              wideEnoughToBill ? <BillingPage /> : <BillingUnavailable />
+            ) : (
+              <Navigate to={home} replace />
+            )
+          }
         />
         <Route
           path="/dashboard"
