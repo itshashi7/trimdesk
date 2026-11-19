@@ -46,20 +46,12 @@
 }
 
 @layer utilities {
-  /* Mobile browsers count 100vh as if the address bar were hidden, which pushes bottom bars
-     out of view. 100dvh follows the visible area; 100vh stays as the fallback. */
-  .app-height {
-    height: 100vh;
-    height: 100dvh;
-  }
-
-  /* While signed in, the page itself never scrolls or bounces; only the content panel does.
-     Stops phones revealing the bare background under the tab bar on an extra swipe. */
-  html.app-locked,
-  html.app-locked body {
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
+  /* Desktop shell is exactly the visible height (sidebar + inner scrolling). Phones scroll the page. */
+  @media (min-width: 768px) {
+    .shell-height {
+      height: 100vh;
+      height: 100dvh;
+    }
   }
 
   .app-min-height {

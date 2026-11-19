@@ -1,5 +1,4 @@
 import type { LucideProps } from 'lucide-react';
-import { useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { canBill, canViewDashboard, canViewReports, useAuth } from '../lib/auth';
 import { BrandMark } from './BrandMark';
@@ -18,16 +17,14 @@ interface NavItem {
  * Firecorp-style shell. Desktop: left sidebar (brand tile, menu, user card). On the billing screen the
  * sidebar shrinks to an icon rail so the counter keeps its width at 1366px. Phones: top bar plus an
  * iOS-style bottom tab bar.
+ *
+ * Phones use normal page scrolling (sticky top bar, tab bar fixed to the screen) so the browser's own
+ * zoom, toolbars and bounce behave; locking the page or sizing it to the viewport breaks after a pinch.
+ * Desktop keeps a viewport-high shell with the sidebar and an inner scrolling panel.
  */
 export function AppShell() {
   const { user } = useAuth();
   const { pathname } = useLocation();
-
-  // Pin the page while the shell is shown; the content panel below does all the scrolling.
-  useEffect(() => {
-    document.documentElement.classList.add('app-locked');
-    return () => document.documentElement.classList.remove('app-locked');
-  }, []);
 
   if (!user) return null;
 
@@ -51,7 +48,7 @@ export function AppShell() {
   const scope = user.outletName ?? user.franchiseName ?? 'All outlets';
 
   return (
-    <div className="app-height flex bg-bg">
+    <div className="shell-height flex min-h-full bg-bg">
       <aside
         aria-label="Sidebar"
         className={`hidden shrink-0 flex-col py-4 transition-[width] duration-200 md:flex ${rail ? 'w-[72px] px-3' : 'w-[236px] px-4'}`}
@@ -103,7 +100,7 @@ export function AppShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface px-4 md:hidden">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface px-4 md:hidden">
           <BrandMark size={32} />
           <span className="min-w-0 flex-1 leading-tight">
             <span className="block text-[14px] font-semibold text-text">GroomDesk</span>
@@ -112,14 +109,14 @@ export function AppShell() {
           <ProfileMenu variant="header" />
         </header>
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-auto overscroll-y-contain">
+        <div className={`flex flex-1 flex-col md:min-h-0 md:overflow-auto md:overscroll-y-contain ${nav.length > 1 ? 'pb-[calc(60px+env(safe-area-inset-bottom))] md:pb-0' : ''}`}>
           <Outlet />
         </div>
 
         {nav.length > 1 && (
           <nav
             aria-label="Main"
-            className="grid shrink-0 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
+            className="fixed inset-x-0 bottom-0 z-30 grid border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
             style={{ gridTemplateColumns: `repeat(${nav.length}, minmax(0, 1fr))` }}
           >
             {nav.map(({ to, short, Icon }) => (
