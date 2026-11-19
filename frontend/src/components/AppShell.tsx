@@ -1,4 +1,5 @@
 import type { LucideProps } from 'lucide-react';
+import { useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { canBill, canViewDashboard, canViewReports, useAuth } from '../lib/auth';
 import { BrandMark } from './BrandMark';
@@ -21,6 +22,13 @@ interface NavItem {
 export function AppShell() {
   const { user } = useAuth();
   const { pathname } = useLocation();
+
+  // Pin the page while the shell is shown; the content panel below does all the scrolling.
+  useEffect(() => {
+    document.documentElement.classList.add('app-locked');
+    return () => document.documentElement.classList.remove('app-locked');
+  }, []);
+
   if (!user) return null;
 
   const nav: NavItem[] = [
@@ -104,7 +112,7 @@ export function AppShell() {
           <ProfileMenu variant="header" />
         </header>
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-auto">
+        <div className="flex min-h-0 flex-1 flex-col overflow-auto overscroll-y-contain">
           <Outlet />
         </div>
 

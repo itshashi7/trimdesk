@@ -53,6 +53,15 @@
     height: 100dvh;
   }
 
+  /* While signed in, the page itself never scrolls or bounces; only the content panel does.
+     Stops phones revealing the bare background under the tab bar on an extra swipe. */
+  html.app-locked,
+  html.app-locked body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
   .app-min-height {
     min-height: 100vh;
     min-height: 100dvh;
