@@ -13,6 +13,8 @@ export default {
         'text-muted': 'var(--text-muted)',
         accent: 'var(--accent)',
         'accent-contrast': 'var(--accent-contrast)',
+        'accent-soft': 'var(--accent-soft)',
+        'accent-soft-text': 'var(--accent-soft-text)',
         'series-1': 'var(--series-1)',
         'series-2': 'var(--series-2)',
         'series-3': 'var(--series-3)',
@@ -25,10 +27,11 @@ export default {
         sans: ['var(--font-sans)'],
       },
       borderRadius: {
-        card: '14px',
+        card: '16px',
       },
       boxShadow: {
         pop: 'var(--shadow-pop)',
+        raised: 'var(--shadow-raised)',
       },
       fontSize: {
         '2xs': ['11px', '14px'],

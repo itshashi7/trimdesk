@@ -56,7 +56,7 @@ export function RoyaltyPage() {
             type="button"
             onClick={() => data && downloadCsv(data)}
             disabled={!data}
-            className="flex h-10 items-center gap-2 rounded-[10px] border border-border-strong bg-surface px-3.5 text-[13.5px] font-medium text-text transition-colors hover:bg-surface-muted disabled:opacity-50"
+            className="flex h-10 items-center gap-2 rounded-[10px] px-3.5 text-[13.5px] font-medium transition bg-accent-soft text-accent-soft-text hover:brightness-[0.97] disabled:opacity-50"
           >
             <DownloadIcon width={16} height={16} />
             Export CSV

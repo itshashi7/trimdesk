@@ -17,10 +17,15 @@ public final class AuthDtos {
     public record LoginResponse(String token, Instant expiresAt, UserProfile user) {
     }
 
-    /** outletTaxRate lets the billing screen preview totals; the server still computes the saved bill. */
+    /**
+     * outletTaxRate lets the billing screen preview totals; the server still computes the saved bill.
+     * franchiseName is set for franchise owners; outletFranchiseName is the franchise that runs an
+     * outlet user's branch (shown in the profile panel).
+     */
     public record UserProfile(long id, String username, String fullName, Role role,
                               Long franchiseId, String franchiseName,
-                              Long outletId, String outletCode, String outletName, BigDecimal outletTaxRate) {
+                              Long outletId, String outletCode, String outletName, String outletArea, String outletCity,
+                              String outletFranchiseName, BigDecimal outletTaxRate) {
 
         static UserProfile from(AppUser u) {
             Outlet o = u.getOutlet();
@@ -30,6 +35,9 @@ public final class AuthDtos {
                     o == null ? null : o.getId(),
                     o == null ? null : o.getCode(),
                     o == null ? null : o.getName(),
+                    o == null ? null : o.getArea(),
+                    o == null ? null : o.getCity(),
+                    o == null ? null : o.getFranchise().getName(),
                     o == null ? null : o.getTaxRate());
         }
     }

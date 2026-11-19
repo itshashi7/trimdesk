@@ -14,6 +14,9 @@ export interface UserProfile {
   outletId: number | null;
   outletCode: string | null;
   outletName: string | null;
+  outletArea: string | null;
+  outletCity: string | null;
+  outletFranchiseName: string | null;
   outletTaxRate: number | null;
 }
 

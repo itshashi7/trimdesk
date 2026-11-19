@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { App } from './App';
 import { ToastProvider } from './components/Toast';
 import { AuthProvider } from './lib/auth';
+import '@fontsource-variable/inter';
 import './index.css';
 
 const queryClient = new QueryClient({

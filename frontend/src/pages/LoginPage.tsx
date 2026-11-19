@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BrandMark } from '../components/BrandMark';
 import { Keycap } from '../components/Keycap';
 import { ApiError } from '../lib/api';
 import { homePath, useAuth } from '../lib/auth';
@@ -58,7 +59,10 @@ export function LoginPage() {
     <main className="flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-[420px]">
         <div className="mb-8">
-          <div className="text-[26px] font-semibold tracking-[-0.02em] text-text">GroomDesk</div>
+          <div className="flex items-center gap-3">
+            <BrandMark size={44} />
+            <span className="text-[26px] font-semibold tracking-[-0.02em] text-text">GroomDesk</span>
+          </div>
           <p className="mt-1.5 text-[14px] text-text-muted">Counter billing and reporting for every outlet in the chain.</p>
         </div>
 

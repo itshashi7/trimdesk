@@ -24,6 +24,8 @@ interface Props {
   preview: BillPreview;
   taxRate: number;
   customerName: string | null;
+  /** Branch being billed for, e.g. "T. Nagar (TNR)". */
+  branch: string | null;
   saving: PaymentMode | null;
   error: string | null;
   onPay: (mode: PaymentMode) => void;
@@ -54,7 +56,10 @@ function DraftBill(p: Props) {
   return (
     <>
       <header className="flex items-baseline justify-between border-b border-border px-5 py-3">
-        <h2 className="text-[15px] font-semibold text-text">Bill</h2>
+        <h2 className="min-w-0 truncate text-[15px] font-semibold text-text">
+          Bill
+          {p.branch && <span className="font-normal text-text-muted"> · {p.branch}</span>}
+        </h2>
         <span className={`truncate pl-4 text-[13px] ${p.customerName ? 'font-medium text-text' : 'text-text-muted'}`}>
           {p.customerName ?? 'No customer yet'}
         </span>
@@ -164,7 +169,7 @@ function DraftBill(p: Props) {
               onClick={() => p.onPay(b.mode)}
               disabled={p.saving !== null}
               className={`flex h-12 items-center justify-center gap-2 rounded-[10px] text-[14px] font-semibold transition-opacity disabled:cursor-wait disabled:opacity-60 ${
-                b.primary ? 'bg-accent text-accent-contrast' : 'border border-border-strong bg-surface text-text hover:bg-surface-muted'
+                b.primary ? 'bg-accent text-accent-contrast' : 'bg-accent-soft text-accent-soft-text hover:brightness-[0.97]'
               }`}
             >
               <Keycap tone={b.primary ? 'onAccent' : 'default'} className={b.primary ? 'bg-transparent' : ''}>
@@ -255,7 +260,7 @@ function ActionButton({
       data-flash={flashId}
       onClick={onClick}
       className={`flex h-12 items-center justify-center gap-2 rounded-[10px] text-[14px] font-semibold ${
-        primary ? 'bg-accent text-accent-contrast' : 'border border-border-strong bg-surface text-text hover:bg-surface-muted'
+        primary ? 'bg-accent text-accent-contrast' : 'bg-accent-soft text-accent-soft-text hover:brightness-[0.97]'
       }`}
     >
       {icon}

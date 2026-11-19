@@ -124,7 +124,7 @@ export function CustomerEditForm({ customer, onSave, onCancel }: Props) {
         <button
           type="button"
           onClick={onCancel}
-          className="flex h-8 items-center gap-2 rounded-[8px] border border-border-strong px-3 text-[13px] font-medium text-text hover:bg-surface-muted"
+          className="flex h-8 items-center gap-2 rounded-[8px] px-3 text-[13px] font-medium bg-accent-soft text-accent-soft-text hover:brightness-[0.97]"
         >
           Cancel
           <Keycap>Esc</Keycap>

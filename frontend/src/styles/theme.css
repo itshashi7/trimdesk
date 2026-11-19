@@ -1,21 +1,32 @@
 /*
  * GroomDesk theme tokens. Components use these through Tailwind (tailwind.config.js);
- * no hex values belong anywhere else.
+ * no hex values belong anywhere else. Look and feel follow the Firecorp reference in CLAUDE.md:
+ * pale grey page, white rounded cards, thin borders, one blue accent.
  *
  * Accent is reserved for: primary buttons, the active nav item, chart lines and the bill total.
+ * The soft accent (pale blue fill + blue text) is for secondary actions, as in the reference.
  */
 :root {
-  --bg: #f5f5f4;
+  --bg: #f2f3f5;
   --surface: #ffffff;
-  --surface-muted: #f7f7f6;
-  --border: #e6e6e3;
-  --border-strong: #d3d3cf;
-  --text: #1c1c1e;
-  --text-muted: #67676c;
+  --surface-muted: #f6f7f9;
+  --border: #e7e8ec;
+  --border-strong: #d4d6dc;
+  --text: #16181d;
+  --text-muted: #646a76;
 
-  /* Preset "Neutral": graphite accent. */
-  --accent: #1c1c1e;
+  /* Default preset: Firecorp blue. White text on it is 5.2:1 (WCAG AA). */
+  --accent: #2563eb;
   --accent-contrast: #ffffff;
+  --accent-soft: #ebf2ff;
+  --accent-soft-text: #1d4ed8;
+
+  /* Brand mark tile: a soft blue gradient so the logo reads as a logo, not a button. */
+  --brand-from: #5ea8ff;
+  --brand-to: #2563eb;
+
+  /* Preset "Neutral": graphite. */
+  --neutral-accent: #1c1c1e;
 
   /* Preset "McKingstown". MCK_ACCENT: sample from the client's signage before the pitch;
      it must keep 4.5:1 contrast with --accent-contrast. Placeholder = graphite. */
@@ -33,10 +44,18 @@
   --success: #067647;
   --success-surface: #ecfdf3;
 
-  --shadow-pop: 0 8px 24px rgb(0 0 0 / 0.16), 0 2px 6px rgb(0 0 0 / 0.08);
+  --shadow-pop: 0 10px 30px rgb(16 24 40 / 0.12), 0 2px 6px rgb(16 24 40 / 0.06);
+  --shadow-raised: 0 1px 2px rgb(16 24 40 / 0.06), 0 1px 1px rgb(16 24 40 / 0.04);
 
   --focus: var(--accent);
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+  /* Inter is self-hosted (@fontsource-variable/inter); the system stack is the fallback. */
+  --font-sans: "Inter Variable", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+:root[data-accent="neutral"] {
+  --accent: var(--neutral-accent);
+  --accent-soft: #eeeef0;
+  --accent-soft-text: #1c1c1e;
 }
 
 :root[data-accent="mck"] {

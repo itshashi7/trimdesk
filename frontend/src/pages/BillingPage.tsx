@@ -400,7 +400,14 @@ export function BillingPage() {
               The service menu could not load. Check the connection and reload the page.
             </p>
           ) : servicesQuery.isPending ? (
-            <p className="rounded-card border border-border bg-surface p-4 text-[13px] text-text-muted">Loading the service menu…</p>
+            <div className="rounded-card border border-border bg-surface p-3" aria-busy="true" aria-label="Loading the service menu">
+              <div className="mb-3 h-4 w-20 animate-pulse rounded bg-surface-muted" />
+              <div className="grid grid-cols-4 gap-2">
+                {Array.from({ length: 12 }, (_, i) => (
+                  <div key={i} className="h-[53px] animate-pulse rounded-[10px] bg-surface-muted" />
+                ))}
+              </div>
+            </div>
           ) : (
             <ServiceGrid services={services} disabled={saved !== null} onAdd={addService} />
           )}
@@ -418,6 +425,7 @@ export function BillingPage() {
           preview={preview}
           taxRate={taxRate}
           customerName={lookup?.customer.name ?? null}
+          branch={user?.outletName ? `${user.outletName} (${user.outletCode})` : null}
           saving={saving}
           error={payError}
           onPay={(mode) => void pay(mode)}

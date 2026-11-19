@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ServiceIcon } from '../components/billing/ServiceIcon';
 import { ChevronDownIcon } from '../components/Icons';
 import { ApiError, api } from '../lib/api';
@@ -152,36 +152,50 @@ function TrendCard({ data }: { data: HqSummary }) {
       </div>
       <div className="mt-3 h-[220px] sm:h-[260px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={points} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} title="Daily revenue">
-            <CartesianGrid vertical={false} stroke="var(--border)" />
+          {/* Reference style: straight segments, a blue fill fading to nothing, dashed light grid. */}
+          <AreaChart data={points} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} title="Daily revenue">
+            <defs>
+              <linearGradient id="revenue-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.16} />
+                <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} stroke="var(--border-strong)" strokeDasharray="4 4" strokeOpacity={0.7} />
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
-              minTickGap={28}
-              tick={{ fill: 'var(--text-muted)', fontSize: 11.5 }}
-              tickFormatter={(d: string) => dateIST(`${d}T12:00:00+05:30`).replace(/ \d{4}$/, '')}
+              minTickGap={32}
+              tickMargin={10}
+              tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
+              tickFormatter={(d: string) => dateIST(`${d}T12:00:00+05:30`).replace(/ \d{4}$/, '').replace(/^(\d) /, '0$1 ')}
             />
             <YAxis
-              width={56}
+              width={52}
               ticks={ticks}
               domain={[0, ticks[ticks.length - 1]]}
               tickLine={false}
               axisLine={false}
-              tick={{ fill: 'var(--text-muted)', fontSize: 11.5 }}
+              tickMargin={6}
+              tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
               tickFormatter={(v: number) => moneyCompact(v)}
             />
-            <Tooltip cursor={{ stroke: 'var(--border-strong)', strokeWidth: 1 }} content={<TrendTooltip />} />
-            <Line
-              type="monotone"
+            <Tooltip
+              cursor={{ stroke: 'var(--border-strong)', strokeWidth: 1, strokeDasharray: '4 4' }}
+              content={<TrendTooltip />}
+            />
+            <Area
+              type="linear"
               dataKey="revenue"
               stroke="var(--accent)"
               strokeWidth={2}
+              strokeLinejoin="miter"
+              fill="url(#revenue-fill)"
               dot={false}
-              activeDot={{ r: 4, stroke: 'var(--surface)', strokeWidth: 2, fill: 'var(--accent)' }}
+              activeDot={{ r: 4.5, stroke: 'var(--surface)', strokeWidth: 2, fill: 'var(--accent)' }}
               isAnimationActive={false}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </section>

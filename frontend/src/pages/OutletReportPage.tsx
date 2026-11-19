@@ -123,7 +123,7 @@ export function OutletReportPage() {
             <button
               type="button"
               onClick={() => update({ date: shiftDate(date, -1) })}
-              className="mt-4 h-9 rounded-[10px] border border-border-strong px-3.5 text-[13.5px] font-medium text-text hover:bg-surface-muted"
+              className="mt-4 h-9 rounded-[10px] px-3.5 text-[13.5px] font-medium bg-accent-soft text-accent-soft-text hover:brightness-[0.97]"
             >
               Show the day before
             </button>
