@@ -46,6 +46,18 @@
 }
 
 @layer utilities {
+  /* Mobile browsers count 100vh as if the address bar were hidden, which pushes bottom bars
+     out of view. 100dvh follows the visible area; 100vh stays as the fallback. */
+  .app-height {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .app-min-height {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
   .tabular {
     font-variant-numeric: tabular-nums;
   }

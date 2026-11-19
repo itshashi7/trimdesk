@@ -56,7 +56,7 @@ export function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-10">
+    <main className="app-min-height flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-[420px]">
         <div className="mb-8">
           <div className="flex items-center gap-3">

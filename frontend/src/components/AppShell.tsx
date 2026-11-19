@@ -43,7 +43,7 @@ export function AppShell() {
   const scope = user.outletName ?? user.franchiseName ?? 'All outlets';
 
   return (
-    <div className="flex h-screen bg-bg">
+    <div className="app-height flex bg-bg">
       <aside
         aria-label="Sidebar"
         className={`hidden shrink-0 flex-col py-4 transition-[width] duration-200 md:flex ${rail ? 'w-[72px] px-3' : 'w-[236px] px-4'}`}
