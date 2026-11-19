@@ -4,6 +4,7 @@ import { BrandMark } from '../components/BrandMark';
 import { Keycap } from '../components/Keycap';
 import { ApiError } from '../lib/api';
 import { homePath, useAuth } from '../lib/auth';
+import { APP_NAME } from '../lib/brand';
 
 const DEMO_PASSWORD = 'demo123';
 
@@ -61,7 +62,7 @@ export function LoginPage() {
         <div className="mb-8">
           <div className="flex items-center gap-3">
             <BrandMark size={44} />
-            <span className="text-[26px] font-semibold tracking-[-0.02em] text-text">GroomDesk</span>
+            <span className="text-[26px] font-semibold tracking-[-0.02em] text-text">{APP_NAME}</span>
           </div>
           <p className="mt-1.5 text-[14px] text-text-muted">Counter billing and reporting for every outlet in the chain.</p>
         </div>

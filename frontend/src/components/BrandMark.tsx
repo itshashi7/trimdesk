@@ -1,7 +1,7 @@
 import { Scissors } from 'lucide-react';
 
 /**
- * GroomDesk logo: gradient tile with a bold white scissors and a soft top highlight.
+ * TrimDesk logo: gradient tile with a bold white scissors and a soft top highlight.
  * Deliberately unlike the flat nav buttons so it never reads as something to click.
  */
 export function BrandMark({ size = 36 }: { size?: number }) {

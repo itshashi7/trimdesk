@@ -14,7 +14,7 @@ web
 
 ## Product Purpose
 
-GroomDesk is a pitch prototype that shows three things: keyboard-fast billing at the counter; a customer's history following them to any outlet; and HQ seeing every outlet live with franchise royalties calculated automatically. It is a convincing demo built in a weekend, not production software.
+TrimDesk is a pitch prototype that shows three things: keyboard-fast billing at the counter; a customer's history following them to any outlet; and HQ seeing every outlet live with franchise royalties calculated automatically. It is a convincing demo built in a weekend, not production software.
 
 ## Positioning
 
@@ -37,7 +37,7 @@ One shared customer record across every outlet of a franchise chain, plus royalt
 
 ## Brand Commitments
 
-- Working name "GroomDesk" (may be renamed).
+- Product name "TrimDesk" (renamed from the working name "GroomDesk"; internal code identifiers keep the old name).
 - Must not use the McKingstown logo or brand assets. "Prepared for McKingstown" appears only as a small caption on the login screen.
 - White-label: HQ can switch the accent colour (presets "Neutral" and "McKingstown"); text on the accent must meet WCAG 4.5:1.
 

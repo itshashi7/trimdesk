@@ -1,6 +1,7 @@
 import { Keyboard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { canViewReports, useAuth } from '../../lib/auth';
+import { APP_NAME } from '../../lib/brand';
 
 /**
  * Shown instead of the billing counter on touch screens narrower than 1024px (phones, portrait
@@ -20,7 +21,7 @@ export function BillingUnavailable() {
         </span>
         <h1 className="mt-4 text-[18px] font-semibold tracking-[-0.01em] text-text">Billing needs the counter laptop</h1>
         <p className="mt-2 text-[14px] leading-relaxed text-text-muted">
-          The counter runs on keyboard shortcuts, F‑keys and an 80mm receipt printer. Open GroomDesk on a laptop or
+          The counter runs on keyboard shortcuts, F‑keys and an 80mm receipt printer. Open {APP_NAME} on a laptop or
           desktop{branch ? ` at ${branch}` : ''} to bill.
         </p>
         {user && canViewReports(user.role) && (

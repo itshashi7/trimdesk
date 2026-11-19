@@ -5,6 +5,7 @@ import { DownloadIcon } from '../components/Icons';
 import { MenuSelect } from '../components/MenuSelect';
 import { ApiError, api } from '../lib/api';
 import { useAuth } from '../lib/auth';
+import { APP_SLUG } from '../lib/brand';
 import { money, todayIST } from '../lib/format';
 import type { RoyaltyReport } from '../lib/types';
 
@@ -194,7 +195,7 @@ function downloadCsv(data: RoyaltyReport) {
   const url = URL.createObjectURL(new Blob(['﻿', csv], { type: 'text/csv;charset=utf-8' }));
   const a = document.createElement('a');
   a.href = url;
-  a.download = `groomdesk-royalty-${data.month}.csv`;
+  a.download = `${APP_SLUG}-royalty-${data.month}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }

@@ -1,6 +1,7 @@
 import type { LucideProps } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { canBill, canViewDashboard, canViewReports, useAuth } from '../lib/auth';
+import { APP_NAME } from '../lib/brand';
 import { BrandMark } from './BrandMark';
 import { BillingIcon, CustomersIcon, DashboardIcon, RoyaltyIcon, StoreIcon } from './Icons';
 import { ProfileMenu } from './ProfileMenu';
@@ -62,7 +63,7 @@ export function AppShell() {
           <div className="flex items-center gap-3 rounded-[14px] border border-border bg-surface p-2">
             <BrandMark size={36} />
             <span className="min-w-0 leading-tight">
-              <span className="block text-[14px] font-semibold tracking-[-0.01em] text-text">GroomDesk</span>
+              <span className="block text-[14px] font-semibold tracking-[-0.01em] text-text">{APP_NAME}</span>
               <span className="block truncate text-2xs text-text-muted">{scope}</span>
             </span>
           </div>
@@ -103,7 +104,7 @@ export function AppShell() {
         <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface px-4 md:hidden">
           <BrandMark size={32} />
           <span className="min-w-0 flex-1 leading-tight">
-            <span className="block text-[14px] font-semibold text-text">GroomDesk</span>
+            <span className="block text-[14px] font-semibold text-text">{APP_NAME}</span>
             <span className="block truncate text-2xs text-text-muted">{scope}</span>
           </span>
           <ProfileMenu variant="header" />

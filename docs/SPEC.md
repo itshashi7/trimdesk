@@ -1,6 +1,7 @@
-# CLAUDE.md — GroomDesk (demo for McKingstown pitch)
+# CLAUDE.md — TrimDesk (demo for McKingstown pitch)
 
-> Working name: **GroomDesk** (rename anytime). This is a **pitch prototype** for a 172-outlet
+> Product name: **TrimDesk** (renamed from the working name GroomDesk; shown name lives in
+> `frontend/src/lib/brand.ts`, internal identifiers such as `com.groomdesk` keep the old name). This is a **pitch prototype** for a 172-outlet
 > men's grooming franchise chain. Goal: a convincing, fast, realistic demo built over one weekend.
 > Not production software. Prefer speed and polish of the demo flow over completeness.
 
