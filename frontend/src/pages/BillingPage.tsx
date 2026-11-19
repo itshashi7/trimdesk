@@ -370,7 +370,8 @@ export function BillingPage() {
   const menuError = servicesQuery.isError || barbersQuery.isError;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    // Keeps its full counter layout when a laptop is zoomed in; the panel scrolls sideways instead.
+    <div className="flex min-h-0 min-w-[1000px] flex-1 flex-col">
       <div
         ref={workspaceRef}
         tabIndex={-1}

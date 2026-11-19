@@ -25,8 +25,9 @@ export function App() {
   const home = user ? homePath(user.role) : '/login';
   const reports = user !== null && canViewReports(user.role);
   const dashboard = user !== null && canViewDashboard(user.role);
-  // Billing is a keyboard counter for laptops; narrower screens get a notice instead (CLAUDE.md §6).
-  const wideEnoughToBill = useMediaQuery('(min-width: 1024px)');
+  // Billing is a keyboard counter. Hide it only on touch phones and portrait tablets, not on a
+  // laptop zoomed in with Ctrl + (which also narrows the page). CLAUDE.md §6.
+  const touchScreenTooSmall = useMediaQuery('(pointer: coarse) and (max-width: 1023px)');
 
   return (
     <Routes>
@@ -42,7 +43,7 @@ export function App() {
           path="/billing"
           element={
             user && canBill(user.role) ? (
-              wideEnoughToBill ? <BillingPage /> : <BillingUnavailable />
+              touchScreenTooSmall ? <BillingUnavailable /> : <BillingPage />
             ) : (
               <Navigate to={home} replace />
             )
