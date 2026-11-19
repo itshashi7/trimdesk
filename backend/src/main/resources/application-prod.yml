@@ -1,0 +1,13 @@
+# Production profile (Railway). Activate with SPRING_PROFILES_ACTIVE=prod.
+# Required variables: DB_URL, DB_USER, DB_PASSWORD, JWT_SECRET. Railway sets PORT.
+server:
+  # Railway terminates HTTPS at its proxy; trust its X-Forwarded-* headers.
+  forward-headers-strategy: framework
+  compression:
+    enabled: true
+  error:
+    include-stacktrace: never
+
+spring:
+  jpa:
+    show-sql: false

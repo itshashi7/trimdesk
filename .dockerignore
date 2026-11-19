@@ -1,0 +1,10 @@
+.git
+.idea
+.vscode
+.claude
+.impeccable
+**/node_modules
+**/dist
+**/target
+**/*.tsbuildinfo
+.env

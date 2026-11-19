@@ -188,6 +188,36 @@ public class SeedRunner implements CommandLineRunner {
             // Rows were inserted with explicit ids; move identity sequences past them for the API.
             jdbc.execute("SELECT setval(pg_get_serial_sequence('" + table + "', 'id'), (SELECT MAX(id) FROM " + table + "))");
         }
+        pinDemoCustomer();
+    }
+
+    /** Phone number the billing screen and the demo script use; see CustomerPanel's DEMO_PHONE. */
+    static final String DEMO_PHONE = "9910551967";
+
+    /**
+     * The generated customers change with the seed end date, but the demo always needs the same
+     * phone number to show cross-outlet history at the T. Nagar counter. Give that number (and the
+     * name Ajith Raj) to the busiest customer who has visited 2+ other outlets and never T. Nagar.
+     */
+    private void pinDemoCustomer() {
+        // Free the number if a generated customer happens to hold it (phone is unique).
+        jdbc.update("UPDATE customer SET phone = '6' || lpad(id::text, 9, '0') WHERE phone = ?", DEMO_PHONE);
+        List<Long> picks = jdbc.queryForList("""
+                SELECT c.id
+                FROM customer c
+                JOIN bill b ON b.customer_id = c.id
+                JOIN outlet o ON o.id = b.outlet_id
+                GROUP BY c.id
+                HAVING COUNT(DISTINCT b.outlet_id) FILTER (WHERE o.code <> 'TNR') >= 2
+                   AND COUNT(*) FILTER (WHERE o.code = 'TNR') = 0
+                ORDER BY COUNT(DISTINCT b.outlet_id) DESC, COUNT(*) DESC, c.id
+                LIMIT 1""", Long.class);
+        if (picks.isEmpty()) {
+            log.warn("No suitable demo customer found; {} is not assigned", DEMO_PHONE);
+            return;
+        }
+        jdbc.update("UPDATE customer SET phone = ?, name = 'Ajith Raj' WHERE id = ?", DEMO_PHONE, picks.get(0));
+        log.info("Demo customer: {} Ajith Raj (customer id {})", DEMO_PHONE, picks.get(0));
     }
 
     private List<GroomingService> loadServices() {
