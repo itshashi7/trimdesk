@@ -232,13 +232,51 @@ function CustomerCard({ lookup, currentOutletId, editing, onEditStart, onEditSav
                     <span className={here ? 'text-text-muted' : 'font-medium text-text'}>{v.outlet.name}</span>
                     {here && <span className="text-text-muted"> (here)</span>}
                   </td>
-                  <td className="max-w-0 truncate py-[5px] text-text-muted">{v.services.join(', ')}</td>
+                  <td className="max-w-0 py-[5px] text-text-muted">
+                    <VisitServices services={v.services} />
+                  </td>
                   <td className="w-[84px] py-[5px] text-right text-text tabular">{money(v.total)}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+      )}
+    </div>
+  );
+}
+
+/** Show at most this many service names in a visit row; the rest collapse into a "+N more" pill. */
+const VISIBLE_SERVICES = 2;
+
+/**
+ * Services on a past visit. Long bills show the first two names and a "+N more" pill so the
+ * count is visible at a glance; hovering or focusing the pill shows the full list.
+ */
+function VisitServices({ services }: { services: string[] }) {
+  const shown = services.slice(0, VISIBLE_SERVICES);
+  const hidden = services.length - shown.length;
+  return (
+    <div className="flex min-w-0 items-center gap-1.5">
+      <span className="truncate">{shown.join(', ')}</span>
+      {hidden > 0 && (
+        <span className="group relative shrink-0">
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-label={`All services: ${services.join(', ')}`}
+            className="rounded-full bg-surface-muted px-1.5 py-px text-2xs font-medium text-text-muted ring-1 ring-border transition-colors hover:bg-accent-soft hover:text-accent-soft-text focus-visible:bg-accent-soft focus-visible:text-accent-soft-text"
+          >
+            +{hidden} more
+          </button>
+          <span
+            role="tooltip"
+            className="pointer-events-none invisible absolute right-0 top-full z-40 mt-1.5 w-max max-w-[280px] rounded-[10px] border border-border bg-surface px-3 py-2 text-[12.5px] text-text opacity-0 shadow-pop transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+          >
+            <span className="mb-1 block text-2xs font-medium text-text-muted">{services.length} services</span>
+            <span className="block leading-relaxed">{services.join(', ')}</span>
+          </span>
+        </span>
       )}
     </div>
   );

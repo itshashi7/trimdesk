@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '../components/Icons';
+import { DatePicker } from '../components/DatePicker';
 import { MenuSelect } from '../components/MenuSelect';
 import { ApiError, api } from '../lib/api';
 import { useAuth } from '../lib/auth';
@@ -68,21 +69,17 @@ export function OutletReportPage() {
             >
               <ChevronLeftIcon width={16} height={16} />
             </button>
-            {/* The native date field shows the browser's locale format (often US); show an Indian-format
-                label instead and open the native calendar from it. */}
-            <label className="relative flex h-8 cursor-pointer items-center gap-1.5 rounded-[7px] px-2 text-[13.5px] font-medium text-text hover:bg-surface-muted">
+            <DatePicker
+              label="Report date"
+              value={date}
+              max={today}
+              today={today}
+              onChange={(d) => update({ date: d })}
+              className="flex h-8 items-center gap-1.5 rounded-[7px] px-2 text-[13.5px] font-medium text-text hover:bg-surface-muted"
+            >
               <CalendarIcon width={16} height={16} className="text-text-muted" />
               <span className="tabular">{dateIST(`${date}T12:00:00+05:30`)}</span>
-              <input
-                type="date"
-                aria-label="Report date"
-                value={date}
-                max={today}
-                onChange={(e) => e.target.value && update({ date: e.target.value })}
-                onClick={(e) => e.currentTarget.showPicker?.()}
-                className="absolute inset-0 cursor-pointer opacity-0"
-              />
-            </label>
+            </DatePicker>
             <button
               type="button"
               onClick={() => update({ date: shiftDate(date, 1) })}
