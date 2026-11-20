@@ -78,14 +78,13 @@ class LoggingHelpersTest {
     }
 
     @Test
-    void clientAddressTrustsOnlyTheEntryTheProxyAppended() {
+    void clientAddressTrustsTheEdgeSetRealIpOnlyBehindTheProxy() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRemoteAddr("100.64.0.7"); // Railway's proxy
-        request.addHeader(ClientAddress.FORWARDED_FOR, "203.0.113.9, 49.37.10.20");
+        request.setRemoteAddr("100.64.0.7"); // an internal Railway hop
+        request.addHeader("X-Forwarded-For", "203.0.113.9");      // visitor-supplied, ignored
+        request.addHeader(ClientAddress.REAL_IP, "49.37.10.20");  // overwritten by the edge
 
-        assertThat(ClientAddress.of(request, true))
-                .as("the visitor's own 203.0.113.9 is ignored; the proxy saw 49.37.10.20")
-                .isEqualTo("49.37.10.20");
+        assertThat(ClientAddress.of(request, true)).isEqualTo("49.37.10.20");
         assertThat(ClientAddress.of(request, false))
                 .as("without a trusted proxy the header is ignored entirely")
                 .isEqualTo("100.64.0.7");
@@ -97,9 +96,8 @@ class LoggingHelpersTest {
         request.setRemoteAddr("100.64.0.7");
         assertThat(ClientAddress.of(request, true)).isEqualTo("100.64.0.7");
 
-        request.addHeader(ClientAddress.FORWARDED_FOR, "1.2.3.4, ");
+        request.addHeader(ClientAddress.REAL_IP, "x".repeat(60));
         assertThat(ClientAddress.of(request, true)).isEqualTo("100.64.0.7");
-        assertThat(ClientAddress.rightmostEntry("x".repeat(60))).isNull();
     }
 
     private static final class MutableClock extends Clock {

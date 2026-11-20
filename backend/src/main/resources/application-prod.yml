@@ -4,7 +4,7 @@ server:
   # Railway terminates HTTPS at its proxy. Spring's forwarded-header support is off on purpose:
   # it takes the LEFTMOST X-Forwarded-For entry, which the visitor controls. Nothing here builds
   # URLs from the scheme or host, and the one place that needs the caller's IP (crash-report rate
-  # limit) reads the rightmost entry itself via groomdesk.trust-proxy below.
+  # limit) reads X-Real-IP, which Railway's edge overwrites, via groomdesk.trust-proxy below.
   forward-headers-strategy: none
   compression:
     enabled: true
@@ -16,5 +16,5 @@ spring:
     show-sql: false
 
 groomdesk:
-  # Exactly one proxy (Railway's edge) sits in front: trust the X-Forwarded-For entry it appends.
+  # Railway's edge sits in front and overwrites X-Real-IP with the connecting address: trust it.
   trust-proxy: true
