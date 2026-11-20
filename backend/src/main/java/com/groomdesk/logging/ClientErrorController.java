@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 /**
  * Receives crashes from the browser (React error screen, uncaught errors) so they show up in the
  * server logs: a customer's browser console is otherwise invisible. Open before sign-in, so it is
- * capped at 4 KB per report and 20 reports per minute per address, and every field is cleaned
+ * capped at 4 KB per report, 20 reports per minute per address and 200 per minute in total, and every field is cleaned
  * before it is logged.
  */
 @RestController
@@ -33,9 +34,11 @@ public class ClientErrorController {
     private static final int STACK_LINES = 6;
 
     private final ClientErrorRateLimiter limiter;
+    private final boolean trustProxy;
 
-    public ClientErrorController(Clock clock) {
-        this.limiter = new ClientErrorRateLimiter(20, clock);
+    public ClientErrorController(Clock clock, @Value("${groomdesk.trust-proxy:false}") boolean trustProxy) {
+        this.limiter = new ClientErrorRateLimiter(20, 200, clock);
+        this.trustProxy = trustProxy;
     }
 
     public record ClientErrorReport(
@@ -52,7 +55,7 @@ public class ClientErrorController {
         if (request.getContentLengthLong() > MAX_BYTES) {
             return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).build();
         }
-        if (!limiter.tryAcquire(request.getRemoteAddr())) {
+        if (!limiter.tryAcquire(ClientAddress.of(request, trustProxy))) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
         }
         log.warn("Browser {} on {}: {}{} | {} | {}",

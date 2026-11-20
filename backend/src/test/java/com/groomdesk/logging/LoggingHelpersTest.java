@@ -1,6 +1,7 @@
 package com.groomdesk.logging;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -52,7 +53,7 @@ class LoggingHelpersTest {
     @Test
     void rateLimiterAllowsTwentyPerMinutePerAddress() {
         MutableClock clock = new MutableClock(Instant.parse("2026-11-20T10:00:00Z"));
-        ClientErrorRateLimiter limiter = new ClientErrorRateLimiter(20, clock);
+        ClientErrorRateLimiter limiter = new ClientErrorRateLimiter(20, 200, clock);
         for (int i = 0; i < 20; i++) {
             assertThat(limiter.tryAcquire("10.0.0.1")).isTrue();
         }
@@ -61,6 +62,44 @@ class LoggingHelpersTest {
 
         clock.advanceSeconds(61);
         assertThat(limiter.tryAcquire("10.0.0.1")).as("a new minute starts a new window").isTrue();
+    }
+
+    @Test
+    void rateLimiterCapsEveryoneTogetherSoRotatingAddressesStillStop() {
+        MutableClock clock = new MutableClock(Instant.parse("2026-11-20T10:00:00Z"));
+        ClientErrorRateLimiter limiter = new ClientErrorRateLimiter(20, 50, clock);
+        for (int i = 0; i < 50; i++) {
+            assertThat(limiter.tryAcquire("203.0.113." + i)).isTrue();
+        }
+        assertThat(limiter.tryAcquire("203.0.113.250")).as("a fresh address is over the shared cap").isFalse();
+
+        clock.advanceSeconds(61);
+        assertThat(limiter.tryAcquire("203.0.113.250")).isTrue();
+    }
+
+    @Test
+    void clientAddressTrustsOnlyTheEntryTheProxyAppended() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteAddr("100.64.0.7"); // Railway's proxy
+        request.addHeader(ClientAddress.FORWARDED_FOR, "203.0.113.9, 49.37.10.20");
+
+        assertThat(ClientAddress.of(request, true))
+                .as("the visitor's own 203.0.113.9 is ignored; the proxy saw 49.37.10.20")
+                .isEqualTo("49.37.10.20");
+        assertThat(ClientAddress.of(request, false))
+                .as("without a trusted proxy the header is ignored entirely")
+                .isEqualTo("100.64.0.7");
+    }
+
+    @Test
+    void clientAddressFallsBackToTheSocketForMissingOrJunkHeaders() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteAddr("100.64.0.7");
+        assertThat(ClientAddress.of(request, true)).isEqualTo("100.64.0.7");
+
+        request.addHeader(ClientAddress.FORWARDED_FOR, "1.2.3.4, ");
+        assertThat(ClientAddress.of(request, true)).isEqualTo("100.64.0.7");
+        assertThat(ClientAddress.rightmostEntry("x".repeat(60))).isNull();
     }
 
     private static final class MutableClock extends Clock {

@@ -1,8 +1,11 @@
 # Production profile (Railway). Activate with SPRING_PROFILES_ACTIVE=prod.
 # Required variables: DB_URL, DB_USER, DB_PASSWORD, JWT_SECRET. Railway sets PORT.
 server:
-  # Railway terminates HTTPS at its proxy; trust its X-Forwarded-* headers.
-  forward-headers-strategy: framework
+  # Railway terminates HTTPS at its proxy. Spring's forwarded-header support is off on purpose:
+  # it takes the LEFTMOST X-Forwarded-For entry, which the visitor controls. Nothing here builds
+  # URLs from the scheme or host, and the one place that needs the caller's IP (crash-report rate
+  # limit) reads the rightmost entry itself via groomdesk.trust-proxy below.
+  forward-headers-strategy: none
   compression:
     enabled: true
   error:
@@ -11,3 +14,7 @@ server:
 spring:
   jpa:
     show-sql: false
+
+groomdesk:
+  # Exactly one proxy (Railway's edge) sits in front: trust the X-Forwarded-For entry it appends.
+  trust-proxy: true
