@@ -70,7 +70,7 @@ export function ProfileMenu({ variant }: { variant: Variant }) {
 
   const avatar = (size: number, text: number) => (
     <span
-      className="flex shrink-0 items-center justify-center rounded-full bg-accent-soft font-semibold text-accent-soft-text"
+      className="flex shrink-0 items-center justify-center rounded-full bg-accent-soft font-semibold text-accent-soft-text ring-1 ring-inset ring-accent-soft-ring"
       style={{ width: size, height: size, fontSize: text }}
     >
       {initials}

@@ -15,6 +15,7 @@ export default {
         'accent-contrast': 'var(--accent-contrast)',
         'accent-soft': 'var(--accent-soft)',
         'accent-soft-text': 'var(--accent-soft-text)',
+        'accent-soft-ring': 'var(--accent-soft-ring)',
         'series-1': 'var(--series-1)',
         'series-2': 'var(--series-2)',
         'series-3': 'var(--series-3)',

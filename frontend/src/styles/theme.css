@@ -20,6 +20,9 @@
   --accent-contrast: #ffffff;
   --accent-soft: #ebf2ff;
   --accent-soft-text: #1d4ed8;
+  /* Thin edge for soft-accent shapes that sit straight on --bg (e.g. the profile avatar),
+     where the pale fill alone is too close to the page grey. Follows every preset. */
+  --accent-soft-ring: color-mix(in srgb, var(--accent-soft-text) 24%, transparent);
 
   /* Brand mark tile: a soft blue gradient so the logo reads as a logo, not a button. */
   --brand-from: #5ea8ff;
