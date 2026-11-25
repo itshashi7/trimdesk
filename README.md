@@ -6,9 +6,9 @@ TrimDesk is a full-stack point-of-sale and head-office reporting platform. I bui
 
 🔗 **Live demo:** [trimdesk.up.railway.app](https://trimdesk.up.railway.app) · 🎥 **Demo video:** [YouTube](https://youtu.be/883OPWghbuM)
 
-<!-- Add screenshots: save them in docs/ and uncomment -->
-<!-- ![Billing screen](docs/billing.png) -->
-<!-- ![HQ dashboard](docs/dashboard.png) -->
+![HQ dashboard: revenue, bills and outlet ranking across all outlets](docs/dashboard.png)
+
+![Billing screen: keyboard-driven counter with live bill and shortcut legend](docs/billing.png)
 
 ## Features
 
