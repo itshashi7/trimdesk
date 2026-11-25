@@ -6,7 +6,7 @@ import { APP_NAME } from '../../lib/brand';
 /**
  * Shown instead of the billing counter on touch screens narrower than 1024px (phones, portrait
  * tablets). Laptops always get billing, even when zoomed in. Billing is built for a laptop
- * keyboard (number keys, F2-F4, Ctrl+P to an 80mm printer; CLAUDE.md §6), so phones get a clear
+ * keyboard (number keys, F2-F4, Ctrl+P to an 80mm printer; docs/SPEC.md §6), so phones get a clear
  * message rather than a cramped page. Managers get links to what does work on a phone.
  */
 export function BillingUnavailable() {

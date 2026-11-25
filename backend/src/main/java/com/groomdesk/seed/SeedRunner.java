@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Demo data loader (CLAUDE.md §7). Runs only with the {@code seed} profile and does nothing if
+ * Demo data loader (docs/SPEC.md §7). Runs only with the {@code seed} profile and does nothing if
  * franchises already exist.
  *
  * <p>Default: 90 days ending today (IST), with today cut off at the current time. Because the cutoff

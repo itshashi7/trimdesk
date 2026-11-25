@@ -1,4 +1,4 @@
-# CLAUDE.md — TrimDesk (demo for McKingstown pitch)
+# TrimDesk — project spec (demo for McKingstown pitch)
 
 > Product name: **TrimDesk** (renamed from the working name GroomDesk; shown name lives in
 > `frontend/src/lib/brand.ts`, internal identifiers such as `com.groomdesk` keep the old name). This is a **pitch prototype** for a 172-outlet

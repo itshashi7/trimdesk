@@ -1,5 +1,5 @@
 /**
- * Live preview of the bill (tax-inclusive prices), mirroring the backend's BillCalculator (CLAUDE.md §3) in integer paise
+ * Live preview of the bill (tax-inclusive prices), mirroring the backend's BillCalculator (docs/SPEC.md §3) in integer paise
  * so it never drifts by a paisa. The saved bill always uses the server's numbers.
  */
 

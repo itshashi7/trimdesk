@@ -63,7 +63,7 @@ public class BillService {
 
     /**
      * Creates a bill at the caller's own outlet (cashier or outlet manager only).
-     * Prices come from the menu, commission from each barber's %, tax from the outlet (CLAUDE.md §3).
+     * Prices come from the menu, commission from each barber's %, tax from the outlet (docs/SPEC.md §3).
      */
     @Transactional
     public BillDto create(CurrentUser user, CreateBillRequest request) {

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Monthly royalty (CLAUDE.md §3): per franchise, Σ taxable_amount of its outlets × royalty % / 100,
+ * Monthly royalty (docs/SPEC.md §3): per franchise, Σ taxable_amount of its outlets × royalty % / 100,
  * rounded once on the franchise's monthly sum. HQ sees every franchise; an owner sees their own.
  */
 @Service

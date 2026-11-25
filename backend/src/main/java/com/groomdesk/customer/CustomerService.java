@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 /**
  * Customers are shared by all outlets. Billing roles (and HQ) see a customer's visits at every
- * outlet; that cross-outlet history is the point of the product (CLAUDE.md §1.2).
+ * outlet; that cross-outlet history is the point of the product (docs/SPEC.md §1.2).
  * Franchise owners are excluded here; their scoped customer view comes with the profile page.
  */
 @Service

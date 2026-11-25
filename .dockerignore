@@ -1,7 +1,6 @@
 .git
 .idea
 .vscode
-.claude
 .impeccable
 **/node_modules
 **/dist

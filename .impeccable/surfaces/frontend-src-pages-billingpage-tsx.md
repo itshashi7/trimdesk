@@ -11,7 +11,7 @@ Mode: Operate. Build path: code-led (Operate surface; no image generation).
 
 Audience/job: outlet cashier at a busy counter, 1366×768 Chrome, keyboard only, bill in under 20 s. Demo audience: chain owner.
 
-Constraints: CLAUDE.md design rules are pinned (neutral base + one accent used only on primary buttons, active nav, chart lines, bill total; theme tokens in theme.css; system font stack; tabular numbers). Prices/tax/commission come from the API.
+Constraints: docs/SPEC.md design rules are pinned (neutral base + one accent used only on primary buttons, active nav, chart lines, bill total; theme tokens in theme.css; system font stack; tabular numbers). Prices/tax/commission come from the API.
 
 ## Direction contract
 

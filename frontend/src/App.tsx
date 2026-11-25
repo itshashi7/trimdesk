@@ -31,7 +31,7 @@ export function App() {
   const reports = user !== null && canViewReports(user.role);
   const dashboard = user !== null && canViewDashboard(user.role);
   // Billing is a keyboard counter. Hide it only on touch phones and portrait tablets, not on a
-  // laptop zoomed in with Ctrl + (which also narrows the page). CLAUDE.md §6.
+  // laptop zoomed in with Ctrl + (which also narrows the page). docs/SPEC.md §6.
   const touchScreenTooSmall = useMediaQuery('(pointer: coarse) and (max-width: 1023px)');
 
   if (import.meta.env.DEV && new URLSearchParams(window.location.search).has('__crash')) return <CrashTest />;

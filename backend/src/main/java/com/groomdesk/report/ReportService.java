@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * Read-only reports. Plain SQL aggregates (JdbcTemplate) are the clearest tool for these;
- * every report checks the caller's outlet scope first (CLAUDE.md §4).
+ * every report checks the caller's outlet scope first (docs/SPEC.md §4).
  */
 @Service
 public class ReportService {

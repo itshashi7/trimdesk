@@ -8,7 +8,7 @@ import { APP_NAME } from '../lib/brand';
 
 const DEMO_PASSWORD = 'demo123';
 
-/** Seeded demo users (CLAUDE.md §7). T. Nagar is the busiest outlet; owner1's franchise runs it. */
+/** Seeded demo users (docs/SPEC.md §7). T. Nagar is the busiest outlet; owner1's franchise runs it. */
 const DEMO_ROLES = [
   { key: '1', role: 'Cashier', username: 'cashier_tnr', scope: 'Billing at the T. Nagar counter' },
   { key: '2', role: 'Outlet manager', username: 'manager_tnr', scope: 'Billing and reports for T. Nagar' },

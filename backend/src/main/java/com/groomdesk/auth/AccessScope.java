@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 /**
- * Role scoping from CLAUDE.md §4, enforced by services (not only the UI).
+ * Role scoping from docs/SPEC.md §4, enforced by services (not only the UI).
  * <ul>
  *   <li>HQ_ADMIN: every outlet</li>
  *   <li>FRANCHISE_OWNER: outlets of their franchise</li>

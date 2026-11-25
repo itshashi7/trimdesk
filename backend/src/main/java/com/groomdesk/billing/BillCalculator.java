@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import java.util.List;
 
 /**
- * Bill money rules from CLAUDE.md §3 (tax-inclusive prices). Pure functions, BigDecimal only, HALF_UP to 2 decimals.
+ * Bill money rules from docs/SPEC.md §3 (tax-inclusive prices). Pure functions, BigDecimal only, HALF_UP to 2 decimals.
  * Shared by the seed runner and bill creation so both produce identical numbers.
  */
 public final class BillCalculator {

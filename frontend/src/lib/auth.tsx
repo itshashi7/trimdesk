@@ -79,7 +79,7 @@ export function useAuth(): AuthContextValue {
 
 export const canBill = (role: Role) => role === 'CASHIER' || role === 'OUTLET_MANAGER';
 
-/** Outlet reports and customer profiles: everyone except the cashier (CLAUDE.md §4). */
+/** Outlet reports and customer profiles: everyone except the cashier (docs/SPEC.md §4). */
 export const canViewReports = (role: Role) => role !== 'CASHIER';
 
 /** Chain dashboard and royalty: HQ (all outlets) and franchise owners (their outlets). */

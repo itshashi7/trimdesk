@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Royalty per franchise per month = Σ taxable_amount of its outlets × royalty_percent / 100 (CLAUDE.md §3).
+ * Royalty per franchise per month = Σ taxable_amount of its outlets × royalty_percent / 100 (docs/SPEC.md §3).
  * Rounded once on the monthly sum, not per bill, so it matches a manual calculation.
  */
 public final class RoyaltyCalculator {

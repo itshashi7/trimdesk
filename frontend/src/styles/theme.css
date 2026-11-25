@@ -1,6 +1,6 @@
 /*
  * TrimDesk theme tokens. Components use these through Tailwind (tailwind.config.js);
- * no hex values belong anywhere else. Look and feel follow the Firecorp reference in CLAUDE.md:
+ * no hex values belong anywhere else. Look and feel follow the Firecorp reference in docs/SPEC.md:
  * pale grey page, white rounded cards, thin borders, one blue accent.
  *
  * Accent is reserved for: primary buttons, the active nav item, chart lines and the bill total.

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * HQ dashboard (CLAUDE.md §5/§6): totals, a live "today so far" figure, daily revenue trend,
+ * HQ dashboard (docs/SPEC.md §5/§6): totals, a live "today so far" figure, daily revenue trend,
  * outlet ranking and top services. HQ sees every outlet; a franchise owner sees their outlets.
  * Revenue is Σ bill total (what customers paid, tax included).
  */

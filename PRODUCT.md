@@ -29,7 +29,7 @@ One shared customer record across every outlet of a franchise chain, plus royalt
 
 ## Capabilities and Constraints
 
-- Stack (decided in CLAUDE.md): React 18 + Vite + TypeScript, Tailwind CSS, React Router, TanStack Query, Recharts; Spring Boot API under `/api` with JWT auth.
+- Stack (decided in docs/SPEC.md): React 18 + Vite + TypeScript, Tailwind CSS, React Router, TanStack Query, Recharts; Spring Boot API under `/api` with JWT auth.
 - Roles are enforced by the API; the UI mirrors them. Demo login uses a role switcher with seeded users (password `demo123`).
 - Tax rate is a placeholder (18%) until the client's accountant confirms it.
 - Language: English only, UI and receipt.

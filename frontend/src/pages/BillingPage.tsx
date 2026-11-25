@@ -286,7 +286,7 @@ export function BillingPage() {
     window.open(`https://wa.me/91${saved.customerPhone}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank', 'noopener');
   }
 
-  // The whole counter runs from the keyboard (CLAUDE.md §6).
+  // The whole counter runs from the keyboard (docs/SPEC.md §6).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
