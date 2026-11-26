@@ -23,7 +23,6 @@ Open the app service → **Variables** → **Raw Editor**, paste, then fill in `
 
 ```
 SPRING_PROFILES_ACTIVE=prod,seed
-GROOMDESK_SEED_END_DATE=2026-11-21
 DB_URL=jdbc:postgresql://${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}?reWriteBatchedInserts=true
 DB_USER=${{Postgres.PGUSER}}
 DB_PASSWORD=${{Postgres.PGPASSWORD}}
@@ -39,11 +38,13 @@ $b = New-Object byte[] 48; [Security.Cryptography.RandomNumberGenerator]::Create
 The app refuses to start in `prod` with the built-in development secret.
 
 - `seed` fills the empty database once with 90 days of demo data ending on
-  `GROOMDESK_SEED_END_DATE`. Set it to the **day you record**: the chart then covers the 90 full days
-  before it, and the live "Today" card shows a busy day instead of zero (days after the deploy stay
-  hidden until they arrive). The seed always gives demo customer 99105 51967 (Ajith Raj) history at
-  three other outlets. It skips itself when data already
-  exists, so leaving it on is harmless. To re-seed later, delete and re-create the Postgres service.
+  `GROOMDESK_SEED_END_DATE` (optional: left out, it ends today). The seed always gives demo customer
+  99105 51967 (Ajith Raj) history at three other outlets. It skips itself when data already exists.
+  To re-seed later, delete and re-create the Postgres service.
+- While `seed` is on, the demo also keeps itself current: at startup and every 10 minutes it adds
+  made-up bills for days that have almost none and for today up to the current time. It never deletes
+  anything. Set `GROOMDESK_SEED_TOP_UP=false` to stop it.
+- **Remove `seed` before the database holds any real bills.**
 - `CORS_ORIGINS` is not needed: the frontend and API share one origin.
 
 ## 4. Public address
@@ -62,7 +63,7 @@ Open the domain in a private window:
 
 - [ ] Login page shows **TrimDesk**; each of the four demo roles signs in
 - [ ] Cashier: bill demo customer 99105 51967 with 1, 2, F3; receipt prints
-- [ ] HQ dashboard: chart runs up to the seed end date; royalty page loads and exports CSV
+- [ ] HQ dashboard: chart runs up to yesterday; royalty page loads and exports CSV
 - [ ] A deep link such as `/royalty` opens directly (not a 404) after signing in
 - [ ] Phone: dashboard and royalty pages fit
 

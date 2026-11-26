@@ -45,7 +45,8 @@ final class BillHistoryGenerator {
     private static final int[] FLAT_DISCOUNTS = {50, 100, 150, 200};
     private static final int[] PERCENT_DISCOUNTS = {10, 15, 20};
 
-    private static final int MIN_WEEKDAY_BILLS = 25;
+    /** No seeded day has fewer bills than this at any outlet; the demo top-up relies on it. */
+    static final int MIN_WEEKDAY_BILLS = 25;
     private static final int MAX_WEEKDAY_BILLS = 60;
     private static final double WEEKEND_UPLIFT = 1.4;
     private static final double ONE_TIME_SHARE = 0.60;
@@ -78,6 +79,13 @@ final class BillHistoryGenerator {
     }
 
     record Result(List<CustomerRow> customers, List<BillRow> bills, List<ItemRow> items) {
+    }
+
+    record SaleLine(long serviceId, long barberId, BigDecimal price, BigDecimal commissionAmount) {
+    }
+
+    /** What one bill contains, before it gets an id, a number, a customer and a time. */
+    record Sale(List<SaleLine> lines, BillCalculator.Amounts amounts, PaymentMode paymentMode) {
     }
 
     private record Slot(int outlet, Instant at, String billNo) {
@@ -147,31 +155,63 @@ final class BillHistoryGenerator {
                     ? customer.preferredBarber
                     : pickIndex(rnd, outlet.barberWeights());
 
-            List<BigDecimal> prices = new ArrayList<>(3);
-            for (GroomingService service : pickServices(1 + pickIndex(rnd, ITEM_COUNT_WEIGHTS))) {
-                int barberIdx = rnd.nextDouble() < SAME_BARBER_PER_BILL ? billBarber : pickIndex(rnd, outlet.barberWeights());
-                Barber barber = outlet.barbers().get(barberIdx);
-                BigDecimal price = service.getPrice();
-                prices.add(price);
-                items.add(new ItemRow(++itemId, billId, service.getId(), barber.getId(), price,
-                        BillCalculator.commission(price, barber.getCommissionPercent())));
+            Sale sale = composeSale(outlet, billBarber);
+            for (SaleLine line : sale.lines()) {
+                items.add(new ItemRow(++itemId, billId, line.serviceId(), line.barberId(), line.price(),
+                        line.commissionAmount()));
             }
-
-            BigDecimal discount = BigDecimal.ZERO;
-            if (rnd.nextDouble() < DISCOUNT_SHARE) {
-                discount = rnd.nextBoolean()
-                        ? BigDecimal.valueOf(FLAT_DISCOUNTS[rnd.nextInt(FLAT_DISCOUNTS.length)])
-                        : BillCalculator.percentOf(BillCalculator.subtotal(prices),
-                        BigDecimal.valueOf(PERCENT_DISCOUNTS[rnd.nextInt(PERCENT_DISCOUNTS.length)]));
-            }
-            BigDecimal taxRate = outlet.outlet().getTaxRate();
-            BillCalculator.Amounts amounts = BillCalculator.compute(prices, discount, taxRate);
-            PaymentMode mode = MODES[pickIndex(rnd, MODE_WEIGHTS)];
 
             bills.add(new BillRow(billId, p.slot().billNo(), outlet.outlet().getId(), customerIds[p.customer()],
-                    outlet.cashierId(), amounts, taxRate, mode, p.slot().at()));
+                    outlet.cashierId(), sale.amounts(), outlet.outlet().getTaxRate(), sale.paymentMode(), p.slot().at()));
         }
         return new Result(customers, bills, items);
+    }
+
+    /** One bill's services, barbers, discount and payment mode. Also used by {@link DemoTopUp}. */
+    Sale composeSale(OutletProfile outlet, int billBarber) {
+        List<SaleLine> lines = new ArrayList<>(3);
+        List<BigDecimal> prices = new ArrayList<>(3);
+        for (GroomingService service : pickServices(1 + pickIndex(rnd, ITEM_COUNT_WEIGHTS))) {
+            int barberIdx = rnd.nextDouble() < SAME_BARBER_PER_BILL ? billBarber : pickIndex(rnd, outlet.barberWeights());
+            Barber barber = outlet.barbers().get(barberIdx);
+            BigDecimal price = service.getPrice();
+            prices.add(price);
+            lines.add(new SaleLine(service.getId(), barber.getId(), price,
+                    BillCalculator.commission(price, barber.getCommissionPercent())));
+        }
+
+        BigDecimal discount = BigDecimal.ZERO;
+        if (rnd.nextDouble() < DISCOUNT_SHARE) {
+            discount = rnd.nextBoolean()
+                    ? BigDecimal.valueOf(FLAT_DISCOUNTS[rnd.nextInt(FLAT_DISCOUNTS.length)])
+                    : BillCalculator.percentOf(BillCalculator.subtotal(prices),
+                    BigDecimal.valueOf(PERCENT_DISCOUNTS[rnd.nextInt(PERCENT_DISCOUNTS.length)]));
+        }
+        BillCalculator.Amounts amounts = BillCalculator.compute(prices, discount, outlet.outlet().getTaxRate());
+        return new Sale(lines, amounts, MODES[pickIndex(rnd, MODE_WEIGHTS)]);
+    }
+
+    /**
+     * Sorted bill times for one outlet on one IST date: 25-60 on a weekday, +40% at weekends, peaking
+     * 5-9 pm. Also used by {@link TopUpPlan}.
+     */
+    static List<Instant> dayTimes(Random rnd, LocalDate date, double weekdayMean, double trend) {
+        DayOfWeek dow = date.getDayOfWeek();
+        boolean weekend = dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY;
+        double expected = weekdayMean * trend * (0.85 + 0.30 * rnd.nextDouble());
+        expected = Math.max(MIN_WEEKDAY_BILLS, Math.min(MAX_WEEKDAY_BILLS, expected));
+        if (weekend) {
+            expected *= WEEKEND_UPLIFT;
+        }
+        int count = (int) Math.round(expected);
+
+        List<Instant> times = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            int hour = HOURS[pickIndex(rnd, HOUR_WEIGHTS)];
+            times.add(date.atTime(hour, rnd.nextInt(60), rnd.nextInt(60)).atZone(IST).toInstant());
+        }
+        Collections.sort(times);
+        return times;
     }
 
     private List<List<Slot>> buildSlots(LocalDate endDate, int days, Instant cutoff) {
@@ -182,29 +222,13 @@ final class BillHistoryGenerator {
         LocalDate start = endDate.minusDays(days - 1L);
         for (int d = 0; d < days; d++) {
             LocalDate date = start.plusDays(d);
-            DayOfWeek dow = date.getDayOfWeek();
-            boolean weekend = dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY;
             double trend = days > 1 ? 0.92 + 0.16 * d / (days - 1) : 1.0;
             String datePart = date.format(BILL_DATE);
 
             for (int o = 0; o < outlets.size(); o++) {
                 OutletProfile profile = outlets.get(o);
-                double expected = profile.weekdayMean() * trend * (0.85 + 0.30 * rnd.nextDouble());
-                expected = Math.max(MIN_WEEKDAY_BILLS, Math.min(MAX_WEEKDAY_BILLS, expected));
-                if (weekend) {
-                    expected *= WEEKEND_UPLIFT;
-                }
-                int count = (int) Math.round(expected);
-
-                List<Instant> times = new ArrayList<>(count);
-                for (int i = 0; i < count; i++) {
-                    int hour = HOURS[pickIndex(rnd, HOUR_WEIGHTS)];
-                    times.add(date.atTime(hour, rnd.nextInt(60), rnd.nextInt(60)).atZone(IST).toInstant());
-                }
-                Collections.sort(times);
-
                 int seq = 0;
-                for (Instant at : times) {
+                for (Instant at : dayTimes(rnd, date, profile.weekdayMean(), trend)) {
                     if (cutoff != null && at.isAfter(cutoff)) {
                         break;
                     }

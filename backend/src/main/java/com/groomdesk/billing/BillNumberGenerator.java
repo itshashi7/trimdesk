@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * {@code {OUTLET_CODE}-{YYYYMMDD}-{4-digit daily sequence}}, date in IST, e.g. MNP-20261121-0042.
@@ -25,6 +27,16 @@ public class BillNumberGenerator {
     public String next(String outletCode, Instant now) {
         String prefix = prefix(outletCode, now);
         return format(prefix, nextSequence(bills.findMaxBillNoWithPrefix(prefix), prefix));
+    }
+
+    /** {@code count} consecutive numbers for one outlet and date. Same lock rule as {@link #next}. */
+    public List<String> nextBatch(String outletCode, Instant day, int count) {
+        String prefix = prefix(outletCode, day);
+        int first = nextSequence(bills.findMaxBillNoWithPrefix(prefix), prefix);
+        if (first + count - 1 > MAX_DAILY_SEQUENCE) {
+            throw new IllegalStateException("Daily bill sequence exhausted for " + prefix);
+        }
+        return IntStream.range(first, first + count).mapToObj(n -> format(prefix, n)).toList();
     }
 
     static String prefix(String outletCode, Instant now) {

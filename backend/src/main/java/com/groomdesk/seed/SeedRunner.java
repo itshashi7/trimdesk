@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,6 +52,8 @@ import java.util.Random;
  * Demo data loader (docs/SPEC.md §7). Runs only with the {@code seed} profile and does nothing if
  * franchises already exist.
  *
+ * <p>{@link DemoTopUp} runs afterwards and keeps the data current.
+ *
  * <p>Default: 90 days ending today (IST), with today cut off at the current time. Because the cutoff
  * moves, a default re-seed differs slightly. Pin {@code groomdesk.seed.end-date=YYYY-MM-DD} (full days,
  * no cutoff) for byte-identical data from the fixed random seed.
@@ -63,6 +66,7 @@ import java.util.Random;
  */
 @Component
 @Profile("seed")
+@Order(1)
 public class SeedRunner implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(SeedRunner.class);
@@ -182,8 +186,8 @@ public class SeedRunner implements CommandLineRunner {
                 new BillHistoryGenerator(rnd, profiles, weighted, people).generate(endDate, DAYS, cutoff);
 
         insertCustomers(result.customers());
-        insertBills(result.bills());
-        insertItems(result.items());
+        insertBills(jdbc, result.bills());
+        insertItems(jdbc, result.items());
         for (String table : List.of("customer", "bill", "bill_item")) {
             // Rows were inserted with explicit ids; move identity sequences past them for the API.
             jdbc.execute("SELECT setval(pg_get_serial_sequence('" + table + "', 'id'), (SELECT MAX(id) FROM " + table + "))");
@@ -233,7 +237,7 @@ public class SeedRunner implements CommandLineRunner {
     }
 
     /** Shortcut 1 is the most common service; items without a shortcut are rare. */
-    private static double popularity(String code) {
+    static double popularity(String code) {
         if (code == null || !code.matches("\\d")) {
             return 1.5;
         }
@@ -288,7 +292,7 @@ public class SeedRunner implements CommandLineRunner {
         });
     }
 
-    private void insertBills(List<BillRow> rows) {
+    static void insertBills(JdbcTemplate jdbc, List<BillRow> rows) {
         jdbc.batchUpdate("""
                 INSERT INTO bill (id, bill_no, outlet_id, customer_id, cashier_id, subtotal, discount, taxable_amount,
                                   tax_rate, tax_amount, total, payment_mode, created_at)
@@ -309,7 +313,7 @@ public class SeedRunner implements CommandLineRunner {
         });
     }
 
-    private void insertItems(List<ItemRow> rows) {
+    static void insertItems(JdbcTemplate jdbc, List<ItemRow> rows) {
         jdbc.batchUpdate("""
                 INSERT INTO bill_item (id, bill_id, service_id, barber_id, price, commission_amount)
                 VALUES (?, ?, ?, ?, ?, ?)""", rows, BATCH_SIZE, (ps, i) -> {

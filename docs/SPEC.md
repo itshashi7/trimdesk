@@ -185,6 +185,11 @@ barber, subtotal, discount, tax, total, payment mode (each part of a split), "Th
 Implement as a Spring `CommandLineRunner` under profile `seed` (idempotent: skip if data exists).
 Use a fixed random seed so data is reproducible.
 
+A second runner under the same profile, the **demo top-up**, keeps the data current: at startup and
+every 10 minutes it fills past days (within the last 90) where an outlet has fewer than 25 bills, and
+fills today up to the current time. It only adds bills, for existing customers, and never touches
+fully seeded days. Off with `GROOMDESK_SEED_TOP_UP=false`.
+
 - **4 franchises**, royalty 6–10%
 - **10 outlets** across Chennai areas + 2 Tamil Nadu towns, each with a 3-letter code
 - **30 barbers** (3 per outlet), commission 30–45%

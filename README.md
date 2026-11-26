@@ -54,7 +54,8 @@ Requires Java 21, Node 22 and Docker.
 docker compose up -d
 
 # 2. Backend on http://localhost:8081
-#    The "seed" profile fills an empty database with 90 days of demo data on first start.
+#    The "seed" profile fills an empty database with 90 days of demo data on first start,
+#    then keeps it current by adding demo bills for missing days and for today.
 cd backend
 SPRING_PROFILES_ACTIVE=seed ./mvnw spring-boot:run
 
@@ -72,7 +73,8 @@ Local runs work with the built-in development defaults. A deployment sets these 
 
 | Variable | Purpose |
 |---|---|
-| `SPRING_PROFILES_ACTIVE` | `prod` in production (add `seed` for demo data) |
+| `SPRING_PROFILES_ACTIVE` | `prod` in production (add `seed` for demo data; it adds made-up bills, so never use it on real data) |
+| `GROOMDESK_SEED_TOP_UP` | `false` stops the demo from adding new bills (optional) |
 | `DB_URL`, `DB_USER`, `DB_PASSWORD` | PostgreSQL connection |
 | `JWT_SECRET` | Token signing key, 32+ bytes (required in production) |
 | `CORS_ORIGINS` | Extra allowed origins, comma-separated (optional) |
