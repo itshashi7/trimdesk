@@ -100,6 +100,7 @@ public class BillService {
         }
 
         BillCalculator.Amounts amounts = BillCalculator.compute(prices, discountAmount(request, prices), outlet.getTaxRate());
+        List<PaymentRules.Part> split = checkPayments(request, amounts.total());
 
         Instant now = clock.instant();
         AppUser cashier = users.getReferenceById(user.userId());
@@ -112,6 +113,7 @@ public class BillService {
         bill.setTaxAmount(amounts.taxAmount());
         bill.setTotal(amounts.total());
         items.forEach(bill::addItem);
+        split.forEach(p -> bill.addPayment(new BillPayment(p.mode(), p.amount())));
         bills.saveAndFlush(bill);
         log.info("Bill {} saved: {} items, total {}, {}, customer {}", bill.getBillNo(), bill.getItems().size(),
                 bill.getTotal(), bill.getPaymentMode(), customer.getId());
@@ -125,6 +127,16 @@ public class BillService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bill not found"));
         access.requireOutlet(user, bill.getOutlet());
         return BillDto.from(bill);
+    }
+
+    private static List<PaymentRules.Part> checkPayments(CreateBillRequest request, BigDecimal total) {
+        List<PaymentRules.Part> parts = request.payments() == null ? List.of()
+                : request.payments().stream().map(p -> new PaymentRules.Part(p.mode(), p.amount())).toList();
+        try {
+            return PaymentRules.check(total, request.paymentMode(), parts);
+        } catch (PaymentRules.InvalidPaymentException e) {
+            throw badRequest(e.getMessage());
+        }
     }
 
     /** Flat amount as entered, or a % of the subtotal. The calculator caps it at the subtotal. */

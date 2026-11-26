@@ -82,8 +82,9 @@ customer    id, phone VARCHAR(10) UNIQUE, name, notes, preferred_barber_id NULL,
             first_visit_outlet_id, created_at                  -- shared across ALL outlets
 bill        id, bill_no UNIQUE, outlet_id, customer_id, cashier_id,
             subtotal, discount, taxable_amount, tax_rate, tax_amount, total,
-            payment_mode ENUM(CASH, UPI, CARD), created_at
+            payment_mode ENUM(CASH, UPI, CARD, MIXED), created_at
 bill_item   id, bill_id FK, service_id, barber_id, price, commission_amount
+bill_payment id, bill_id FK, mode ENUM(CASH, UPI, CARD), amount NUMERIC(12,2)   -- MIXED bills only
 ```
 
 Indexes: `bill(outlet_id, created_at)`, `bill(customer_id)`, `bill_item(barber_id)`, `customer(phone)`.
@@ -98,6 +99,8 @@ Indexes: `bill(outlet_id, created_at)`, `bill(customer_id)`, `bill_item(barber_i
 - Tax rate is **configurable per outlet**. Seed a placeholder; real GST rate to be confirmed with
   the client's accountant before any real use.
 - `commission_amount = item.price × barber.commission_percent / 100` (on pre-discount price, demo rule).
+- **Split payment:** a bill is paid in one mode, or `MIXED` with two or three `bill_payment` rows in
+  different modes, each above zero, adding up exactly to `total`. Reports count each part in its own mode.
 - **Royalty** per franchise per month = `Σ taxable_amount of its outlets × franchise.royalty_percent / 100`.
 - `bill_no` = `{OUTLET_CODE}-{YYYYMMDD}-{4-digit daily sequence}`, e.g. `MNP-20261121-0042`.
 - Customer phone: exactly 10 digits, starts with 6–9. Looking up an unknown phone creates a new customer inline.
@@ -111,7 +114,7 @@ Indexes: `bill(outlet_id, created_at)`, `bill(customer_id)`, `bill_item(barber_i
 | HQ_ADMIN | All franchises & outlets | Dashboard, royalty report, edit service menu |
 | FRANCHISE_OWNER | Only their franchise's outlets | Reports for those outlets |
 | OUTLET_MANAGER | Only their outlet | Outlet report, barbers, billing |
-| CASHIER | Only their outlet | Billing, customer lookup |
+| CASHIER | Only their outlet | Billing, customer lookup, export today's bills |
 
 Enforce in the service layer (not just UI). Login screen has a **demo role switcher**: buttons
 "Login as Cashier / Outlet Manager / Franchise Owner / HQ" using seeded users (password `demo123`).
@@ -127,9 +130,10 @@ GET  /outlets/{id}/barbers
 GET  /customers/lookup?phone=            → customer + last 5 visits (any outlet) or 404
 POST /customers                          → create
 GET  /customers/{id}                     → profile + full visit history across outlets
-POST /bills                              → create bill (items, discount, paymentMode) → bill DTO
+POST /bills                              → create bill (items, discount, paymentMode, payments if MIXED) → bill DTO
 GET  /bills/{id}                         → for receipt print
 GET  /reports/outlet/{id}/day?date=      → revenue, bill count, cash/UPI/card split, per-barber earnings
+GET  /reports/outlet/{id}/bills?date=    → one row per bill, for CSV export (cashiers: today only)
 GET  /reports/hq/summary?from=&to=       → totals, outlet ranking, daily revenue trend, footfall
 GET  /reports/royalty?month=YYYY-MM      → per franchise: outlets, revenue, royalty %, royalty due
 ```
@@ -154,19 +158,21 @@ Shortcuts:
 | `D` | Focus discount |
 | `Del` | Remove last item |
 | `F2` / `F3` / `F4` | Pay CASH / UPI / CARD → saves bill |
+| `S` | Split payment: enter cash / UPI / card amounts, `Enter` saves, `Esc` cancels |
 | `Ctrl+P` | Print receipt |
 | `W` | Open WhatsApp bill link |
 | `Esc` | New bill (clear) |
 
-Show a small shortcut legend at the bottom. Toast on save with bill number.
+Show a small shortcut legend at the bottom (it wraps rather than hiding entries), with a button that
+downloads today's bills as CSV. Toast on save with bill number.
 
 **Receipt** — print CSS for 80mm thermal paper: outlet name/area, bill no, date-time, items with
-barber, subtotal, discount, tax, total, payment mode, "Thank you, visit again".
+barber, subtotal, discount, tax, total, payment mode (each part of a split), "Thank you, visit again".
 
 ### Manager / Owner / HQ — responsive (must look good on a phone)
 - **Customer profile:** contact, notes, preferred barber, visit timeline across outlets, total spend.
 - **Outlet day report:** date picker, KPI cards (revenue, bills, avg bill value), cash/UPI/card
-  split, barber table (services, revenue, commission).
+  split, barber table (services, revenue, commission), "Export bills" CSV for the chosen day.
 - **HQ dashboard:** date range, KPI cards (total revenue, bills, active outlets), 90-day revenue
   line chart, outlet ranking table (sortable), top services bar chart.
 - **Royalty report:** month picker, table per franchise → outlets, revenue, royalty %, royalty due,

@@ -1,6 +1,7 @@
 import type {
   Barber,
   Bill,
+  BillRow,
   CreateBillRequest,
   Customer,
   CustomerLookup,
@@ -106,6 +107,8 @@ export const api = {
   outlets: () => request<OutletSummary[]>('GET', '/outlets'),
   outletDay: (outletId: number, date: string) =>
     request<OutletDayReport>('GET', `/reports/outlet/${outletId}/day?date=${date}`),
+  outletDayBills: (outletId: number, date: string) =>
+    request<BillRow[]>('GET', `/reports/outlet/${outletId}/bills?date=${date}`),
   searchCustomers: (q: string) => request<CustomerSearchResult[]>('GET', `/customers/search?q=${encodeURIComponent(q)}`),
   customerProfile: (id: number) => request<CustomerProfile>('GET', `/customers/${id}`),
   hqSummary: (from: string, to: string) => request<HqSummary>('GET', `/reports/hq/summary?from=${from}&to=${to}`),

@@ -63,6 +63,11 @@ public class Bill {
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BillItem> items = new ArrayList<>();
 
+    /** Empty unless paymentMode is MIXED; then one row per mode, adding up to total. */
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private List<BillPayment> payments = new ArrayList<>();
+
     protected Bill() {
     }
 
@@ -84,6 +89,11 @@ public class Bill {
     public void addItem(BillItem item) {
         items.add(item);
         item.setBill(this);
+    }
+
+    public void addPayment(BillPayment payment) {
+        payments.add(payment);
+        payment.setBill(this);
     }
 
     public Long getId() { return id; }
@@ -112,4 +122,5 @@ public class Bill {
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public List<BillItem> getItems() { return items; }
+    public List<BillPayment> getPayments() { return payments; }
 }

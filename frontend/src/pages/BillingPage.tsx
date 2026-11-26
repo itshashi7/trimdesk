@@ -5,16 +5,18 @@ import type { CustomerChanges } from '../components/billing/CustomerEditForm';
 import { CustomerPanel, type LookupStatus } from '../components/billing/CustomerPanel';
 import { ServiceGrid, serviceFlashId } from '../components/billing/ServiceGrid';
 import { ShortcutLegend } from '../components/billing/ShortcutLegend';
+import { EMPTY_SPLIT, checkSplit, type SplitValues } from '../components/billing/SplitPayment';
 import { Receipt } from '../components/Receipt';
 import { useToast } from '../components/Toast';
 import { ApiError, api, errorMessage } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { parseDiscount, previewBill } from '../lib/billMath';
 import { flash } from '../lib/flash';
-import { dateTimeIST, money } from '../lib/format';
+import { downloadBillsCsv, paidByText } from '../lib/csv';
+import { dateTimeIST, money, todayIST } from '../lib/format';
 import { normalizeName } from '../lib/names';
 import { usePhoneHistory } from '../hooks/usePhoneHistory';
-import type { Bill, CustomerLookup, PaymentMode, ServiceItem } from '../lib/types';
+import type { Bill, BillPaymentMode, CustomerLookup, PaymentMode, PaymentPart, ServiceItem } from '../lib/types';
 
 const PAY_KEYS: Record<string, PaymentMode> = { F2: 'CASH', F3: 'UPI', F4: 'CARD' };
 const PHONE_PATTERN = /^[6-9]\d{9}$/;
@@ -51,7 +53,10 @@ export function BillingPage() {
   const [newName, setNewName] = useState('');
   const [items, setItems] = useState<DraftItem[]>([]);
   const [discountText, setDiscountText] = useState('');
-  const [saving, setSaving] = useState<PaymentMode | null>(null);
+  const [saving, setSaving] = useState<BillPaymentMode | null>(null);
+  const [splitOpen, setSplitOpen] = useState(false);
+  const [splitValues, setSplitValues] = useState<SplitValues>(EMPTY_SPLIT);
+  const [exporting, setExporting] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
   const [saved, setSaved] = useState<Bill | null>(null);
   const [editing, setEditing] = useState(false);
@@ -59,6 +64,7 @@ export function BillingPage() {
   const phoneRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const discountRef = useRef<HTMLInputElement>(null);
+  const splitRef = useRef<HTMLInputElement>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
   const lastBarberRef = useRef<number | null>(null);
   const nextUid = useRef(1);
@@ -101,6 +107,7 @@ export function BillingPage() {
     setPayError(null);
     setSaved(null);
     setEditing(false);
+    closeSplit(false);
     lastBarberRef.current = null;
     requestAnimationFrame(() => phoneRef.current?.focus());
   }
@@ -221,23 +228,63 @@ export function BillingPage() {
     flash('key-del');
   }
 
-  async function pay(mode: PaymentMode) {
-    if (saving || saved) return;
-    flash(`pay-${mode}`, `key-${Object.keys(PAY_KEYS).find((k) => PAY_KEYS[k] === mode)?.toLowerCase()}`);
+  /** Checks that apply to every way of paying; returns false (with a message) if the bill can't be saved yet. */
+  function readyToPay(): boolean {
     if (!lookup) {
       setPayError('Look up the customer first. Press / and type their phone.');
       phoneRef.current?.focus();
-      return;
+      return false;
     }
     if (items.length === 0) {
       setPayError('Add at least one service. Press 1–9.');
-      return;
+      return false;
     }
     if (discount === undefined) {
       setPayError('Fix the discount: an amount like 50 or a percent like 10%.');
       discountRef.current?.focus();
+      return false;
+    }
+    return true;
+  }
+
+  function pay(mode: PaymentMode) {
+    if (saving || saved) return;
+    flash(`pay-${mode}`, `key-${Object.keys(PAY_KEYS).find((k) => PAY_KEYS[k] === mode)?.toLowerCase()}`);
+    if (!readyToPay()) return;
+    closeSplit(false);
+    void saveBill(mode);
+  }
+
+  function openSplit() {
+    if (saving || saved) return;
+    flash('pay-split', 'key-s');
+    if (!readyToPay()) return;
+    setPayError(null);
+    setSplitOpen(true);
+    requestAnimationFrame(() => splitRef.current?.focus());
+  }
+
+  function closeSplit(refocus = true) {
+    setSplitOpen(false);
+    setSplitValues(EMPTY_SPLIT);
+    if (refocus) focusWorkspace();
+  }
+
+  function paySplit() {
+    if (saving || saved || !readyToPay()) return;
+    const check = checkSplit(splitValues, preview.total);
+    if (check.invalid || check.remainingPaise !== 0 || check.parts.length === 0) {
+      setPayError(check.remainingPaise > 0 ? `${money(check.remainingPaise / 100)} is still due.` : 'The split must add up to the total.');
       return;
     }
+    flash('pay-MIXED');
+    // Everything in one mode is just a normal bill.
+    if (check.parts.length === 1) void saveBill(check.parts[0].mode);
+    else void saveBill('MIXED', check.parts);
+  }
+
+  async function saveBill(mode: BillPaymentMode, payments?: PaymentPart[]) {
+    if (!lookup || discount === undefined) return;
     setSaving(mode);
     setPayError(null);
     try {
@@ -246,8 +293,11 @@ export function BillingPage() {
         items: items.map((i) => ({ serviceId: i.service.id, barberId: i.barberId })),
         discount,
         paymentMode: mode,
+        payments,
       });
       setSaved(bill);
+      setSplitOpen(false);
+      setSplitValues(EMPTY_SPLIT);
       toast(`Bill ${bill.billNo} saved`);
       focusWorkspace();
     } catch (e) {
@@ -278,12 +328,31 @@ export function BillingPage() {
       '',
       ...saved.items.map((i) => `${i.serviceName}: ${money(i.price)}`),
       saved.discount > 0 ? `Discount: -${money(saved.discount)}` : null,
-      `Total: ${money(saved.total)} (${saved.paymentMode})`,
+      `Total: ${money(saved.total)} (${paidByText(saved.payments, money)})`,
       `Includes tax: ${money(saved.taxAmount)}`,
       '',
       'Thank you, visit again!',
     ].filter((l): l is string => l !== null);
     window.open(`https://wa.me/91${saved.customerPhone}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank', 'noopener');
+  }
+
+  /** Today's bills at this outlet as a CSV, for the cashier's day-end handover. */
+  async function exportToday() {
+    if (exporting || !user?.outletCode) return;
+    setExporting(true);
+    try {
+      const date = todayIST();
+      const rows = await api.outletDayBills(outletId, date);
+      if (rows.length === 0) toast('No bills yet today.', 'error');
+      else {
+        downloadBillsCsv(user.outletCode, date, rows);
+        toast(`Exported ${rows.length} ${rows.length === 1 ? 'bill' : 'bills'}`);
+      }
+    } catch (e) {
+      toast(errorText(e, 'Could not export the bills.'), 'error');
+    } finally {
+      setExporting(false);
+    }
   }
 
   // The whole counter runs from the keyboard (docs/SPEC.md §6).
@@ -313,10 +382,17 @@ export function BillingPage() {
         print();
         return;
       }
+      const inSplit = target instanceof HTMLInputElement && target.dataset.splitInput !== undefined;
+      if (inSplit && key === 'Enter') {
+        e.preventDefault();
+        paySplit();
+        return;
+      }
       if (key === 'Escape') {
         e.preventDefault();
         flash('key-esc');
-        if (target === discountRef.current || target instanceof HTMLSelectElement) focusWorkspace();
+        if (splitOpen && (inSplit || !inField)) closeSplit();
+        else if (target === discountRef.current || target instanceof HTMLSelectElement) focusWorkspace();
         else if (target === nameRef.current) {
           setStatus('idle');
           setNewName('');
@@ -356,6 +432,11 @@ export function BillingPage() {
         case 'w':
           e.preventDefault();
           whatsApp();
+          break;
+        case 's':
+          if (saved) break;
+          e.preventDefault();
+          openSplit();
           break;
         case 'e':
           e.preventDefault();
@@ -441,14 +522,26 @@ export function BillingPage() {
           branch={user?.outletName ? `${user.outletName} (${user.outletCode})` : null}
           saving={saving}
           error={payError}
-          onPay={(mode) => void pay(mode)}
+          onPay={pay}
+          split={{
+            open: splitOpen,
+            values: splitValues,
+            onChange: (mode, value) => {
+              setSplitValues((prev) => ({ ...prev, [mode]: value }));
+              setPayError(null);
+            },
+            onOpen: openSplit,
+            onCancel: () => closeSplit(),
+            onSave: paySplit,
+            firstRef: splitRef,
+          }}
           saved={saved}
           onPrint={print}
           onWhatsApp={whatsApp}
           onNewBill={resetBill}
         />
       </div>
-      <ShortcutLegend />
+      <ShortcutLegend onExport={() => void exportToday()} exporting={exporting} />
       {saved && <Receipt bill={saved} />}
     </div>
   );

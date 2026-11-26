@@ -6,6 +6,7 @@ import { MenuSelect } from '../components/MenuSelect';
 import { api, errorMessage } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { APP_SLUG } from '../lib/brand';
+import { downloadCsv as saveCsv } from '../lib/csv';
 import { money, todayIST } from '../lib/format';
 import type { RoyaltyReport } from '../lib/types';
 
@@ -191,16 +192,5 @@ function downloadCsv(data: RoyaltyReport) {
   }
   rows.push([data.month, 'Grand total', '', '', '', data.franchises.reduce((t, f) => t + f.bills, 0), n(data.totalRevenue), n(data.totalTaxable), '', n(data.totalRoyalty)]);
 
-  const csv = rows.map((r) => r.map(csvCell).join(',')).join('\r\n');
-  const url = URL.createObjectURL(new Blob(['﻿', csv], { type: 'text/csv;charset=utf-8' }));
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${APP_SLUG}-royalty-${data.month}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function csvCell(value: string | number): string {
-  const s = String(value);
-  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  saveCsv(`${APP_SLUG}-royalty-${data.month}.csv`, rows);
 }

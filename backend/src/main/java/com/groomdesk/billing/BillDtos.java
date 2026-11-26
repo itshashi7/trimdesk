@@ -25,13 +25,21 @@ public final class BillDtos {
             @NotNull Long customerId,
             @NotEmpty @Size(max = 20) List<@Valid @NotNull Item> items,
             @Valid Discount discount,
-            @NotNull PaymentMode paymentMode) {
+            @NotNull PaymentMode paymentMode,
+            @Size(max = 3) List<@Valid @NotNull Payment> payments) {
 
         public record Item(@NotNull Long serviceId, @NotNull Long barberId) {
         }
 
         public record Discount(@NotNull DiscountType type, @NotNull @DecimalMin("0.00") BigDecimal value) {
         }
+
+        /** One part of a split payment; only sent when paymentMode is MIXED. */
+        public record Payment(@NotNull PaymentMode mode, @NotNull BigDecimal amount) {
+        }
+    }
+
+    public record PaymentDto(PaymentMode mode, BigDecimal amount) {
     }
 
     public record BillItemDto(long id, long serviceId, String serviceName, long barberId, String barberName,
@@ -46,7 +54,7 @@ public final class BillDtos {
                           List<BillItemDto> items,
                           BigDecimal subtotal, BigDecimal discount, BigDecimal taxableAmount,
                           BigDecimal taxRate, BigDecimal taxAmount, BigDecimal total,
-                          PaymentMode paymentMode) {
+                          PaymentMode paymentMode, List<PaymentDto> payments) {
 
         static BillDto from(Bill b) {
             return new BillDto(b.getId(), b.getBillNo(), b.getCreatedAt(),
@@ -57,7 +65,15 @@ public final class BillDtos {
                             i.getService().getName(), i.getBarber().getId(), i.getBarber().getName(),
                             i.getPrice(), i.getCommissionAmount())).toList(),
                     b.getSubtotal(), b.getDiscount(), b.getTaxableAmount(), b.getTaxRate(), b.getTaxAmount(),
-                    b.getTotal(), b.getPaymentMode());
+                    b.getTotal(), b.getPaymentMode(), payments(b));
+        }
+
+        /** Always lists what was paid: the split rows, or one row with the whole total. */
+        private static List<PaymentDto> payments(Bill b) {
+            if (b.getPaymentMode() != PaymentMode.MIXED) {
+                return List.of(new PaymentDto(b.getPaymentMode(), b.getTotal()));
+            }
+            return b.getPayments().stream().map(p -> new PaymentDto(p.getMode(), p.getAmount())).toList();
         }
     }
 }

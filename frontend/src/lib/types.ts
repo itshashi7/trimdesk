@@ -1,7 +1,14 @@
 // Mirrors the backend DTOs (com.groomdesk.*Dtos). Money arrives as JSON numbers with 2 decimals.
 
 export type Role = 'HQ_ADMIN' | 'FRANCHISE_OWNER' | 'OUTLET_MANAGER' | 'CASHIER';
+/** A mode a customer pays with. */
 export type PaymentMode = 'CASH' | 'UPI' | 'CARD';
+/** How a saved bill was paid: one mode, or MIXED when split (the parts are in Bill.payments). */
+export type BillPaymentMode = PaymentMode | 'MIXED';
+export interface PaymentPart {
+  mode: PaymentMode;
+  amount: number;
+}
 export type ServiceCategory = 'HAIR' | 'BEARD' | 'FACIAL' | 'COMBO' | 'OTHER';
 
 export interface UserProfile {
@@ -159,7 +166,27 @@ export interface CreateBillRequest {
   customerId: number;
   items: { serviceId: number; barberId: number }[];
   discount: { type: 'FLAT' | 'PERCENT'; value: number } | null;
-  paymentMode: PaymentMode;
+  paymentMode: BillPaymentMode;
+  /** Only for MIXED: two or three parts that add up to the total. */
+  payments?: PaymentPart[];
+}
+
+/** One bill in the day's CSV export. */
+export interface BillRow {
+  billNo: string;
+  createdAt: string;
+  customerName: string;
+  customerPhone: string;
+  cashierName: string;
+  items: string | null;
+  subtotal: number;
+  discount: number;
+  taxAmount: number;
+  total: number;
+  paymentMode: BillPaymentMode;
+  cash: number;
+  upi: number;
+  card: number;
 }
 
 export interface BillItem {
@@ -191,5 +218,7 @@ export interface Bill {
   taxRate: number;
   taxAmount: number;
   total: number;
-  paymentMode: PaymentMode;
+  paymentMode: BillPaymentMode;
+  /** What was paid in each mode; one entry for a single-mode bill. */
+  payments: PaymentPart[];
 }

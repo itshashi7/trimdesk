@@ -1,10 +1,12 @@
 import type { RefObject } from 'react';
 import type { BillPreview } from '../../lib/billMath';
 import { dateTimeIST, money } from '../../lib/format';
-import type { Barber, Bill, PaymentMode, ServiceItem } from '../../lib/types';
+import { paidByText } from '../../lib/csv';
+import type { Barber, Bill, BillPaymentMode, PaymentMode, ServiceItem } from '../../lib/types';
 import { ChatIcon, CheckIcon, CloseIcon, PrintIcon } from '../Icons';
 import { Keycap } from '../Keycap';
 import { BarberSelect } from './BarberSelect';
+import { SplitPayment, type SplitProps } from './SplitPayment';
 
 export interface DraftItem {
   uid: number;
@@ -26,9 +28,11 @@ interface Props {
   customerName: string | null;
   /** Branch being billed for, e.g. "T. Nagar (TNR)". */
   branch: string | null;
-  saving: PaymentMode | null;
+  saving: BillPaymentMode | null;
   error: string | null;
   onPay: (mode: PaymentMode) => void;
+  /** Split payment: open while the cashier enters cash / UPI / card amounts. */
+  split: SplitProps;
   saved: Bill | null;
   onPrint: () => void;
   onWhatsApp: () => void;
@@ -160,6 +164,10 @@ function DraftBill(p: Props) {
           </p>
         )}
 
+        {p.split.open ? (
+          <SplitPayment {...p.split} total={preview.total} saving={p.saving === 'MIXED'} />
+        ) : (
+        <>
         <div className="mt-4 grid grid-cols-3 gap-2">
           {PAY_BUTTONS.map((b) => (
             <button
@@ -179,6 +187,18 @@ function DraftBill(p: Props) {
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          data-flash="pay-split"
+          onClick={p.split.onOpen}
+          disabled={p.saving !== null}
+          className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-[10px] text-[13px] font-medium text-text-muted transition-colors hover:bg-surface-muted hover:text-text disabled:opacity-60"
+        >
+          Split payment: part cash, part UPI or card
+          <Keycap>S</Keycap>
+        </button>
+        </>
+        )}
       </div>
     </>
   );
@@ -192,7 +212,11 @@ function SavedBill({ saved, onPrint, onWhatsApp, onNewBill }: Props & { saved: B
           <CheckIcon width={16} height={16} />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="text-[15px] font-semibold text-text">Paid by {modeLabel[saved.paymentMode]}</h2>
+          <h2 className="text-[15px] font-semibold text-text">
+            {saved.paymentMode === 'MIXED'
+              ? `Paid ${paidByText(saved.payments, money)}`
+              : `Paid by ${modeLabel[saved.paymentMode]}`}
+          </h2>
           <p className="text-[12.5px] text-text-muted tabular">
             {saved.billNo} · {dateTimeIST(saved.createdAt)}
           </p>

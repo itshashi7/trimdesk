@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '../components/Icons';
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, DownloadIcon } from '../components/Icons';
+import { downloadBillsCsv } from '../lib/csv';
 import { DatePicker } from '../components/DatePicker';
 import { MenuSelect } from '../components/MenuSelect';
 import { api, errorMessage } from '../lib/api';
@@ -38,6 +39,22 @@ export function OutletReportPage() {
 
   const report = reportQuery.data;
   const outlet = outlets.find((o) => o.id === outletId);
+
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  /** Every bill of the shown outlet and day as a CSV (one row per bill, with the cash / UPI / card split). */
+  async function exportBills() {
+    if (!outlet) return;
+    setExporting(true);
+    setExportError(null);
+    try {
+      downloadBillsCsv(outlet.code, date, await api.outletDayBills(outlet.id, date));
+    } catch (e) {
+      setExportError(errorMessage(e, 'Could not export the bills.'));
+    } finally {
+      setExporting(false);
+    }
+  }
 
   return (
     <main className="mx-auto w-full max-w-[1120px] px-4 py-5 sm:px-6 sm:py-7">
@@ -99,9 +116,23 @@ export function OutletReportPage() {
               </button>
             )}
           </div>
+          <button
+            type="button"
+            onClick={() => void exportBills()}
+            disabled={!outlet || !report || report.bills === 0 || exporting}
+            className="flex h-10 items-center gap-2 rounded-[10px] px-3.5 text-[13.5px] font-medium transition bg-accent-soft text-accent-soft-text hover:brightness-[0.97] disabled:opacity-50"
+          >
+            <DownloadIcon width={16} height={16} />
+            {exporting ? 'Exporting…' : 'Export bills'}
+          </button>
         </div>
       </div>
 
+      {exportError && (
+        <div className="mt-4">
+          <Notice tone="error">{exportError}</Notice>
+        </div>
+      )}
       <p className="mt-5 text-[13px] font-medium text-text-muted">{longDateLabel(date)}</p>
 
       <div className="mt-2">

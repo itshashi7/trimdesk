@@ -39,7 +39,16 @@ export function Receipt({ bill }: { bill: Bill }) {
         <span>Total</span>
         <span>{money(bill.total)}</span>
       </div>
-      <Line left="Paid by" right={modeLabel[bill.paymentMode]} />
+      {bill.paymentMode === 'MIXED' ? (
+        <>
+          <Line left="Paid by" right="Split" />
+          {bill.payments.map((p) => (
+            <Line key={p.mode} left={`· ${modeLabel[p.mode]}`} right={money(p.amount)} />
+          ))}
+        </>
+      ) : (
+        <Line left="Paid by" right={modeLabel[bill.paymentMode]} />
+      )}
       <div style={{ ...small, marginTop: '1.5mm' }}>
         <Line left="Taxable value" right={money(bill.taxableAmount)} />
         <Line left={`Tax included (${bill.taxRate}%)`} right={money(bill.taxAmount)} />

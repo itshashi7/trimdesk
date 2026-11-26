@@ -13,6 +13,8 @@ TrimDesk is a full-stack point-of-sale and head-office reporting platform for mu
 ## Features
 
 - **Fast, keyboard-only billing:** completes a customer bill in under 20 seconds, with tax-inclusive GST, barber commissions and thermal receipt printing.
+- **Split payments:** one bill paid partly in cash and partly by UPI or card; the parts must add up to the total, and reports count each part in its own mode.
+- **Day-end export:** cashiers download today's bills as CSV; managers, owners and HQ can export any day.
 - **Role-based access:** HQ, franchise owner, manager and cashier roles using JWT, with data scoping enforced in the service layer.
 - **Live HQ dashboard:** sales across outlets at a glance.
 - **Franchise royalty reports:** generated automatically each month, with CSV export (demo runs on 90 days of seeded data).
@@ -85,7 +87,7 @@ cd backend
 ./mvnw test
 ```
 
-Unit tests cover the core business rules: GST calculation, barber commissions, franchise royalties, bill numbering and role-based data scoping.
+Unit tests cover the core business rules: GST calculation, split payments, barber commissions, franchise royalties, bill numbering and role-based data scoping.
 
 ## Author
 
