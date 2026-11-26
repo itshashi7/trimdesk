@@ -9,7 +9,7 @@ web
 ## Users
 
 - **Primary: the outlet cashier.** Standing at a busy grooming-salon counter on a 1366×768 laptop in Chrome. Job: look up the customer by phone, add services, assign barbers, take payment and print a receipt, using the keyboard alone, in under 20 seconds. Today they do this in Excel.
-- **Audience for this build: the chain owner** (172-outlet men's grooming franchise) watching a 2-minute demo video and trying a live link. Success is that they believe it would replace Excel across their outlets.
+- **Audience for this build: the owner of a multi-outlet salon or grooming chain** watching a 2-minute demo video and trying a live link. Success is that they believe it could run billing and reporting across all their outlets.
 - **Other roles:** outlet manager (outlet report, barbers, billing), franchise owner (reports for their outlets), HQ admin (all-outlet dashboard, royalty report, service menu). Manager/owner/HQ screens must work on a phone.
 
 ## Product Purpose
@@ -38,8 +38,8 @@ One shared customer record across every outlet of a franchise chain, plus royalt
 ## Brand Commitments
 
 - Product name "TrimDesk" (renamed from the working name "GroomDesk"; internal code identifiers keep the old name).
-- Must not use the McKingstown logo or brand assets. "Prepared for McKingstown" appears only as a small caption on the login screen.
-- White-label: HQ can switch the accent colour (presets "Neutral" and "McKingstown"); text on the accent must meet WCAG 4.5:1.
+- Generic prototype: no real chain's name, logo or brand assets. The login screen carries a small "Prototype · demo data only" caption.
+- White-label: HQ can switch the accent colour (presets "Neutral" and "Brand", the client's own colour); text on the accent must meet WCAG 4.5:1.
 
 ## Evidence on Hand
 
@@ -51,7 +51,7 @@ One shared customer record across every outlet of a franchise chain, plus royalt
 1. The counter is the hero: every billing action has a key, and the cashier never needs the mouse.
 2. The server decides money: prices, tax and commission come from the API; the UI only displays them.
 3. Show cross-outlet history at the moment it matters, in the customer card at billing time.
-4. Calm and credible over flashy: it must look like software a 172-outlet chain could run on.
+4. Calm and credible over flashy: it must look like software a chain with 100+ outlets could run on.
 
 ## Accessibility & Inclusion
 

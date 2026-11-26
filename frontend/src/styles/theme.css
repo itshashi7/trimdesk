@@ -31,10 +31,10 @@
   /* Preset "Neutral": graphite. */
   --neutral-accent: #1c1c1e;
 
-  /* Preset "McKingstown". MCK_ACCENT: sample from the client's signage before the pitch;
-     it must keep 4.5:1 contrast with --accent-contrast. Placeholder = graphite. */
-  --mck-accent: #1c1c1e;
-  --mck-accent-contrast: #ffffff;
+  /* Preset "Brand": a client chain's own accent, set when the app is set up for them.
+     It must keep 4.5:1 contrast with --brand-accent-contrast. Placeholder = graphite. */
+  --brand-accent: #1c1c1e;
+  --brand-accent-contrast: #ffffff;
 
   /* Categorical chart colours (validated for colour-blind separation; always shown with labels).
      Used where one accent cannot tell series apart, e.g. the UPI / cash / card split. */
@@ -61,7 +61,7 @@
   --accent-soft-text: #1c1c1e;
 }
 
-:root[data-accent="mck"] {
-  --accent: var(--mck-accent);
-  --accent-contrast: var(--mck-accent-contrast);
+:root[data-accent="brand"] {
+  --accent: var(--brand-accent);
+  --accent-contrast: var(--brand-accent-contrast);
 }

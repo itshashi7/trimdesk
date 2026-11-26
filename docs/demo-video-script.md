@@ -6,7 +6,7 @@ Numbers on screen come from the seeded data, so read them off the screen rather 
 
 | Time | Screen | Voice-over |
 |---|---|---|
-| 0:00–0:12 | **HQ dashboard** (HQ login), 30-day range | "This is every McKingstown outlet on one screen, live. Today it's Excel sheets emailed in at night." |
+| 0:00–0:12 | **HQ dashboard** (HQ login), 30-day range | "This is every outlet of a salon chain on one screen, live. No more sheets emailed in at night." |
 | 0:12–0:20 | Hover the revenue chart, then the outlet ranking | "Revenue, bills and the best and weakest outlets, updated as each bill is saved." |
 | 0:20–0:45 | **Billing** (cashier, T. Nagar). Show a stopwatch overlay. Type a new phone number, Enter, type a name, Enter, press 1, 2, F3, Ctrl+P | "At the counter, the cashier never touches the mouse. Phone number, services by number key, F3 for UPI, and the receipt prints. Under 20 seconds." |
 | 0:45–1:05 | Esc, type 99105 51967, Enter. Point at the visit list | "A regular from another outlet walks in. His history follows him across the chain: where he went, what he had, who cut his hair." |

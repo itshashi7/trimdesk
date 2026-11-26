@@ -1,8 +1,8 @@
-# TrimDesk — project spec (demo for McKingstown pitch)
+# TrimDesk — project spec (prototype for multi-outlet salon chains)
 
 > Product name: **TrimDesk** (renamed from the working name GroomDesk; shown name lives in
-> `frontend/src/lib/brand.ts`, internal identifiers such as `com.groomdesk` keep the old name). This is a **pitch prototype** for a 172-outlet
-> men's grooming franchise chain. Goal: a convincing, fast, realistic demo built over one weekend.
+> `frontend/src/lib/brand.ts`, internal identifiers such as `com.groomdesk` keep the old name). This is a **generic prototype** for
+> multi-outlet men's grooming and salon franchise chains. Goal: a convincing, fast, realistic demo built over one weekend.
 > Not production software. Prefer speed and polish of the demo flow over completeness.
 
 ## 1. Goal
@@ -29,13 +29,13 @@ Show a chain owner, in a 2-minute video and a live link, that:
   (`--accent`, `--accent-contrast`, `--bg`, `--surface`, `--border`, `--text`, `--text-muted`) and map
   them in `tailwind.config`. No hard-coded hex values in components.
 - **White-label switch:** Settings page (HQ only) with an accent color picker + 2 presets:
-  "Neutral" (graphite) and "McKingstown" (brand accent sampled from their site/signage — fill in
-  `MCK_ACCENT` in theme.css). Persist per organization. Text on accent must meet WCAG 4.5:1.
+  "Neutral" (graphite) and "Brand" (a client's own accent — fill in `--brand-accent` in theme.css
+  when setting up for a chain). Persist per organization. Text on accent must meet WCAG 4.5:1.
 - **Font:** system stack `-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif`
   (or self-host Inter). Do **not** bundle SF Pro. Use tabular numbers (`font-variant-numeric:
   tabular-nums`) for all amounts.
-- Do **not** use the McKingstown logo or brand assets. Show "Prepared for McKingstown" as a small
-  caption on the login screen only.
+- Keep the product generic: no real chain's name, logo or brand assets anywhere. The login screen
+  shows a small "Prototype · demo data only" caption.
 
 ---
 

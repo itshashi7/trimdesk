@@ -138,7 +138,7 @@ export function LoginPage() {
           </p>
         )}
 
-        <p className="mt-10 text-center text-2xs text-text-muted">Prepared for McKingstown</p>
+        <p className="mt-10 text-center text-2xs text-text-muted">Prototype · demo data only</p>
       </div>
     </main>
   );

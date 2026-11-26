@@ -2,7 +2,7 @@
 
 **Multi-outlet billing and franchise analytics for men's grooming chains.**
 
-TrimDesk is a full-stack point-of-sale and head-office reporting platform. I built it independently after spotting a gap at a 170+ outlet men's grooming franchise that still bills on Excel. It's a working prototype; the franchise hasn't adopted it.
+TrimDesk is a full-stack point-of-sale and head-office reporting platform for multi-outlet salon and grooming chains. I built it independently as a working prototype; it runs on generated demo data, not a real client's.
 
 🔗 **Live demo:** [trimdesk.up.railway.app](https://trimdesk.up.railway.app) · 🎥 **Demo video:** [YouTube](https://youtu.be/883OPWghbuM)
 
